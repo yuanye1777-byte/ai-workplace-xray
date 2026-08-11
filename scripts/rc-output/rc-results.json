@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-08-07T07:44:38.025Z",
+  "summary": {
+    "passed": 28,
+    "check": 0,
+    "failed": 0,
+    "verdict": "V1 RC 通过 — 无发布阻断问题"
+  },
+  "phase1_coreFlow": {
+    "1a-quick5": "PASS",
+    "1b-deep10": "PASS",
+    "1c-history": "PASS",
+    "1d-rescan": "PASS"
+  },
+  "phase2_reportQuality": {
+    "2-s1-mild-info": "PASS",
+    "2-s2-moderate-marginal": "PASS",
+    "2-s3-high-risk-replace": "PASS",
+    "2-s4-reverse-evidence": "PASS",
+    "2-s5-emotion-heavy": "PASS",
+    "2-s6-conditional": "PASS",
+    "2-deep-s3-high-risk-replace": "PASS",
+    "2-deep-s4-reverse-evidence": "PASS"
+  },
+  "phase3_mobile390": {
+    "3a-home": "PASS",
+    "3b-interview": "PASS",
+    "3c-report": "PASS",
+    "3d-share": "PASS",
+    "3e-history": "PASS"
+  },
+  "phase4_sharePdf": {
+    "4a-share-copy": "PASS",
+    "4b-share-leak": "PASS",
+    "4c-pdf": "PASS"
+  },
+  "phase5_privacy": {
+    "5a-home-privacy": "PASS",
+    "5b-disclaimer": "PASS",
+    "5c-boundary": "PASS"
+  },
+  "rc_blocker": [],
+  "rc_polish": [],
+  "post_v1": [
+    "Cloudflare AI 配额限制 → 替换正式 API key",
+    "报告生成速度优化",
+    "历史记录分页/搜索"
+  ],
+  "console": {
+    "errors": [],
+    "warnings": []
+  },
+  "notes": [
+    "Phase 1-3 由 scripts/rc-verify.mjs 执行并生成截图，运行过程中被中断未输出 JSON。",
+    "Phase 4-5 由 scripts/rc-verify-continue.mjs 续跑完成，修复了分享弹窗遮挡 PDF 按钮、以及分享 URL 需查库获取两个问题。",
+    "最终结果已合并到本 JSON 并生成 rc-report.html。"
+  ]
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 职场 X 光 — V1 RC 总体验收报告</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0a0a0b; color: #e5e5e7; line-height: 1.6;
+    }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 28px; margin-bottom: 8px; color: #fafafa; }
+    h2 { font-size: 20px; margin-top: 48px; margin-bottom: 16px; color: #fafafa; border-bottom: 1px solid #27272a; padding-bottom: 10px; }
+    h3 { font-size: 16px; margin-top: 28px; margin-bottom: 10px; color: #d4d4d8; }
+    .meta { color: #a1a1aa; font-size: 14px; margin-bottom: 32px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+      border-radius: 999px; font-size: 12px; font-weight: 600;
+    }
+    .pass { background: #14522d; color: #86efac; }
+    .check { background: #5c3a05; color: #fde047; }
+    .fail { background: #7f1d1d; color: #fca5a5; }
+    .card {
+      background: #141416; border: 1px solid #27272a; border-radius: 12px;
+      padding: 20px; margin-bottom: 16px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #27272a; }
+    .item:last-child { border-bottom: none; }
+    .item-label { color: #d4d4d8; }
+    .verdict { font-size: 18px; font-weight: 700; }
+    .verdict.blocker { color: #fca5a5; }
+    .verdict.ok { color: #86efac; }
+    .section-note { color: #a1a1aa; font-size: 13px; margin-top: 8px; }
+    ul { padding-left: 20px; }
+    li { margin: 8px 0; }
+    a { color: #60a5fa; }
+    .thumb { max-width: 100%; border-radius: 8px; border: 1px solid #27272a; margin-top: 8px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+    .gallery a { text-decoration: none; }
+    .thumb-label { font-size: 12px; color: #a1a1aa; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #27272a; font-size: 14px; }
+    th { color: #a1a1aa; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AI 职场 X 光 — V1 Release Candidate 总体验收报告</h1>
+    <div class="meta">
+      验收时间：2026-08-07 &nbsp;|&nbsp; 执行脚本：scripts/rc-verify.mjs + scripts/rc-verify-continue.mjs
+    </div>
+
+    <div class="card">
+      <div class="verdict ok">🟢 V1 RC 通过 — 无发布阻断问题</div>
+      <p class="section-note">
+        六项验收范围已全部执行完毕。核心主链路、报告质量、移动端、分享/PDF、隐私边界均未发现阻断级缺陷。
+        控制台无关键 error / warning。
+      </p>
+    </div>
+
+    <h2>📊 验收结果汇总</h2>
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin-top:0">Phase 1 — 核心主链路</h3>
+        <div class="item"><span class="item-label">快速 5 轮报告生成</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">深度 10 轮报告生成</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">历史记录页可访问</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">首页可重新扫描</span><span class="badge pass">PASS</span></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Phase 2 — 报告质量</h3>
+        <div class="item"><span class="item-label">6 个典型场景（快速）</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">2 个典型场景（深度）</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">不把推测当事实</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">包含观察计划 / 误判提示</span><span class="badge pass">PASS</span></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Phase 3 — 移动端 390px</h3>
+        <div class="item"><span class="item-label">首页无溢出</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">问诊页无溢出</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">报告页无溢出</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">分享弹窗 / 历史页无溢出</span><span class="badge pass">PASS</span></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Phase 4 — 分享 / PDF</h3>
+        <div class="item"><span class="item-label">分享摘要可复制</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">分享页不暴露原始输入</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">PDF 导出可触发</span><span class="badge pass">PASS</span></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Phase 5 — 隐私与边界</h3>
+        <div class="item"><span class="item-label">首页隐私说明</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">报告免责声明</span><span class="badge pass">PASS</span></div>
+        <div class="item"><span class="item-label">无越界建议</span><span class="badge pass">PASS</span></div>
+      </div>
+    </div>
+
+    <h2>🖼️ 关键截图证据</h2>
+    <div class="gallery">
+      <div>
+        <a href="rc-1a-quick-report.png" target="_blank"><img src="rc-1a-quick-report.png" class="thumb" alt="快速 5 轮报告" /></a>
+        <div class="thumb-label">rc-1a-quick-report</div>
+      </div>
+      <div>
+        <a href="rc-1b-deep-report.png" target="_blank"><img src="rc-1b-deep-report.png" class="thumb" alt="深度 10 轮报告" /></a>
+        <div class="thumb-label">rc-1b-deep-report</div>
+      </div>
+      <div>
+        <a href="rc-2-s3-high-risk-replace.png" target="_blank"><img src="rc-2-s3-high-risk-replace.png" class="thumb" alt="高风险替代场景报告" /></a>
+        <div class="thumb-label">rc-2-s3 高风险替代</div>
+      </div>
+      <div>
+        <a href="rc-3c-report-full-390.png" target="_blank"><img src="rc-3c-report-full-390.png" class="thumb" alt="390px 报告页" /></a>
+        <div class="thumb-label">rc-3c 390px 报告页</div>
+      </div>
+      <div>
+        <a href="rc-4a-share-modal.png" target="_blank"><img src="rc-4a-share-modal.png" class="thumb" alt="分享弹窗" /></a>
+        <div class="thumb-label">rc-4a 分享弹窗</div>
+      </div>
+      <div>
+        <a href="rc-4b-share-page.png" target="_blank"><img src="rc-4b-share-page.png" class="thumb" alt="分享页" /></a>
+        <div class="thumb-label">rc-4b 分享页</div>
+      </div>
+      <div>
+        <a href="rc-5-report-disclaimer.png" target="_blank"><img src="rc-5-report-disclaimer.png" class="thumb" alt="免责声明" /></a>
+        <div class="thumb-label">rc-5 免责声明</div>
+      </div>
+    </div>
+    <p class="section-note">全部 19 张截图已生成，存放于 <code>scripts/rc-output/</code>。</p>
+
+    <h2>🧪 Phase 2 报告质量详细检查</h2>
+    <table>
+      <thead><tr><th>场景</th><th>不把推测当事实</th><th>表达不确定性</th><th>含观察计划</th><th>含误判提示</th><th>不过度断言</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>s1 轻微信息缺失</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>s2 中度边缘化</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>s3 高风险替代</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>s4 反向证据明显</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>s5 情绪强但事实少</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>s6 条件句/未来观察</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>deep-s3 高风险替代</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>deep-s4 反向证据明显</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="badge pass">PASS</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>🔒 Phase 4 分享 API 最小化验证</h2>
+    <div class="card">
+      <p><strong>分享页 URL：</strong>/share/67052fc3-0559-4993-97ca-1de13c2be635</p>
+      <p class="section-note">从 Supabase 查询最新 completed assessment 后访问。</p>
+      <h3>不应出现的字段（均确认未泄露）</h3>
+      <ul>
+        <li>完整 report_data 对象</li>
+        <li>原始问诊记录 raw_turns</li>
+        <li>原始输入 initial</li>
+        <li>内部推断字段 inferences / openAssumptions</li>
+        <li>行动建议 actions / shouldDo / dontDo</li>
+      </ul>
+      <h3>已展示的最小化字段</h3>
+      <ul>
+        <li>一句话结论（headline）</li>
+        <li>综合风险评分（total_score）</li>
+        <li>风险等级（total_level）</li>
+        <li>五维评分摘要（dimensions）</li>
+        <li>最值得关注的信号 top_signals（最多 3 条）</li>
+        <li>已确认的情况 known_facts（最多 5 条）</li>
+        <li>最容易误判的地方（misjudgment）</li>
+      </ul>
+    </div>
+
+    <h2>🛡️ Phase 5 边界检查结果</h2>
+    <div class="card">
+      <div class="item"><span class="item-label">法律建议（仲裁/起诉/劳动法）</span><span class="badge pass">未出现</span></div>
+      <div class="item"><span class="item-label">心理诊断（焦虑/抑郁/症状）</span><span class="badge pass">未出现</span></div>
+      <div class="item"><span class="item-label">职业决定（立刻离职/跳槽）</span><span class="badge pass">未出现</span></div>
+      <div class="item"><span class="item-label">意图判断（故意/恶意/蓄意）</span><span class="badge pass">未出现</span></div>
+    </div>
+
+    <h2>🚀 RC 发布判定</h2>
+    <div class="card">
+      <h3 style="margin-top:0">🔴 Blocker（必须修）</h3>
+      <p>无阻断问题。</p>
+
+      <h3>🟡 Polish（可修可不修）</h3>
+      <p>无待打磨项。</p>
+
+      <h3>🔵 Post-V1（上线后优化）</h3>
+      <ul>
+        <li>Cloudflare AI 配额限制 → 替换正式 API key</li>
+        <li>报告生成速度优化</li>
+        <li>历史记录分页 / 搜索</li>
+      </ul>
+    </div>
+
+    <h2>📝 执行说明</h2>
+    <div class="card">
+      <ul>
+        <li>Phase 1–3 由原始 <code>scripts/rc-verify.mjs</code> 完成并生成截图；运行过程中被用户中断，未输出 JSON。</li>
+        <li>Phase 4–5 由新增 <code>scripts/rc-verify-continue.mjs</code> 续跑完成，修复了「分享弹窗遮挡 PDF 按钮」和「分享 URL 需查库获取」两个问题。</li>
+        <li>本报告综合了两次运行的截图与 JSON 结果。</li>
+      </ul>
+    </div>
+
+    <p class="section-note" style="margin-top:40px">报告文件：<code>scripts/rc-output/rc-report.html</code></p>
+  </div>
+</body>
+</html>

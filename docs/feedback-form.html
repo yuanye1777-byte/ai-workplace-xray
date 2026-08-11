@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 职场 X 光 · 内部试用反馈表</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    line-height: 1.6;
+    padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; color: #000; }
+  .subtitle { font-size: 14px; color: #86868b; margin-bottom: 28px; }
+  .section {
+    background: #fff; border-radius: 14px; padding: 20px 24px;
+    margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .section h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: #000; }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #333; }
+  .helper { font-size: 12px; color: #86868b; margin-top: 2px; }
+
+  /* radio group */
+  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .radio-group label.radio-option {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 14px; font-weight: 400; cursor: pointer;
+    padding: 8px 16px; border: 1.5px solid #d2d2d7; border-radius: 10px;
+    background: #fff; transition: all 0.15s;
+  }
+  .radio-group label.radio-option:hover { border-color: #0071e3; background: #f0f6ff; }
+  .radio-group label.radio-option.selected { border-color: #0071e3; background: #e8f2ff; color: #0071e3; font-weight: 600; }
+  .radio-group input[type="radio"] { display: none; }
+
+  /* star rating */
+  .star-row { display: flex; gap: 6px; align-items: center; }
+  .star-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid #d2d2d7;
+    background: #fff; font-size: 18px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    color: #86868b; user-select: none;
+  }
+  .star-btn:hover { border-color: #f5a623; background: #fff8ed; }
+  .star-btn.active { border-color: #f5a623; background: #f5a623; color: #fff; }
+  .star-label { font-size: 13px; color: #86868b; margin-left: 8px; }
+
+  /* textarea */
+  textarea {
+    width: 100%; min-height: 72px; padding: 10px 14px;
+    border: 1.5px solid #d2d2d7; border-radius: 10px;
+    font-size: 14px; font-family: inherit; resize: vertical;
+    outline: none; transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: #0071e3; }
+
+  /* submit */
+  .submit-row { text-align: center; margin-top: 20px; margin-bottom: 40px; }
+  .btn-primary {
+    display: inline-block; padding: 12px 40px; font-size: 15px; font-weight: 600;
+    border: none; border-radius: 12px; background: #0071e3; color: #fff;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary:hover { background: #0077ed; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: #a1a1a6; cursor: not-allowed; }
+
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: #34c759; color: #fff; padding: 10px 24px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s; z-index: 999;
+  }
+  .toast.show { opacity: 1; }
+  .summary-box {
+    background: #f9f9fb; border: 1px solid #e5e5ea; border-radius: 10px;
+    padding: 14px 18px; font-size: 13px; white-space: pre-wrap;
+    color: #333; max-height: 300px; overflow-y: auto; margin-top: 10px;
+  }
+
+  .required::after { content: " *"; color: #ff3b30; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📋 AI 职场 X 光 · 内部试用反馈</h1>
+  <p class="subtitle">感谢参与 XRay_v1.0-rc1 内部试用。如实填写，不记名。</p>
+
+  <form id="feedbackForm">
+
+    <!-- 使用意愿 -->
+    <div class="section">
+      <h2>1. 使用意愿</h2>
+      <div class="field">
+        <label class="required">是否愿意输入第一段描述？（描述了自己真实的职场困惑）</label>
+        <div class="radio-group" data-name="willing-to-start">
+          <label class="radio-option"><input type="radio" name="willing-to-start" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="willing-to-start" value="否"> 否</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 过程顺畅度 -->
+    <div class="section">
+      <h2>2. 问诊过程</h2>
+      <div class="field">
+        <label class="required">问诊过程是否顺畅？（无卡顿、无困惑、回答自然）</label>
+        <div class="radio-group" data-name="smooth-process">
+          <label class="radio-option"><input type="radio" name="smooth-process" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="smooth-process" value="否"> 否</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 报告准确度 -->
+    <div class="section">
+      <h2>3. 报告质量</h2>
+      <div class="field">
+        <label class="required">报告准确度（1 = 完全不准，5 = 非常准）</label>
+        <div class="star-row">
+          <button type="button" class="star-btn" data-name="accuracy" data-value="1">★</button>
+          <button type="button" class="star-btn" data-name="accuracy" data-value="2">★</button>
+          <button type="button" class="star-btn" data-name="accuracy" data-value="3">★</button>
+          <button type="button" class="star-btn" data-name="accuracy" data-value="4">★</button>
+          <button type="button" class="star-btn" data-name="accuracy" data-value="5">★</button>
+          <span class="star-label" id="accuracy-label">未选择</span>
+        </div>
+        <input type="hidden" name="accuracy" id="accuracy-input">
+      </div>
+
+      <div class="field">
+        <label class="required">报告克制度（1 = 太越界，5 = 克制得刚好）</label>
+        <div class="star-row">
+          <button type="button" class="star-btn" data-name="restraint" data-value="1">★</button>
+          <button type="button" class="star-btn" data-name="restraint" data-value="2">★</button>
+          <button type="button" class="star-btn" data-name="restraint" data-value="3">★</button>
+          <button type="button" class="star-btn" data-name="restraint" data-value="4">★</button>
+          <button type="button" class="star-btn" data-name="restraint" data-value="5">★</button>
+          <span class="star-label" id="restraint-label">未选择</span>
+        </div>
+        <input type="hidden" name="restraint" id="restraint-input">
+      </div>
+    </div>
+
+    <!-- 最有价值 / 最不舒服 -->
+    <div class="section">
+      <h2>4. 具体感受</h2>
+      <div class="field">
+        <label>最有用的一句话（报告中哪句话让你觉得最有启发）</label>
+        <textarea name="best-sentence" placeholder="例如：「你的核心优势在于……但这也成了……」"></textarea>
+      </div>
+      <div class="field">
+        <label>最不舒服的一句话（报告中哪句话让你觉得冒犯或不恰当）</label>
+        <textarea name="worst-sentence" placeholder="例如：「你可能是想太多……」"></textarea>
+      </div>
+    </div>
+
+    <!-- 后续行为意愿 -->
+    <div class="section">
+      <h2>5. 后续行为意愿</h2>
+
+      <div class="field">
+        <label class="required">是否愿意保存报告 / 导出 PDF？</label>
+        <div class="radio-group" data-name="save-pdf">
+          <label class="radio-option"><input type="radio" name="save-pdf" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="save-pdf" value="否"> 否</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="required">是否愿意分享报告摘要给朋友/同事？</label>
+        <div class="radio-group" data-name="share">
+          <label class="radio-option"><input type="radio" name="share" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="share" value="否"> 否</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="required">是否愿意 30 天后复测（看处境是否变化）？</label>
+        <div class="radio-group" data-name="retest-30d">
+          <label class="radio-option"><input type="radio" name="retest-30d" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="retest-30d" value="否"> 否</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="required">是否愿意为深度报告 / 趋势对比功能付费？</label>
+        <div class="radio-group" data-name="pay">
+          <label class="radio-option"><input type="radio" name="pay" value="是"> 是</label>
+          <label class="radio-option"><input type="radio" name="pay" value="否"> 否</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 其他建议 -->
+    <div class="section">
+      <h2>6. 其他建议</h2>
+      <div class="field">
+        <label>还有什么想说的？（bug、想法、吐槽都行）</label>
+        <textarea name="other" rows="4" placeholder="自由发挥……"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn-primary" id="submitBtn">提交反馈</button>
+    </div>
+  </form>
+
+  <div id="summaryArea" style="display:none;">
+    <div class="section">
+      <h2>✅ 已生成反馈摘要</h2>
+      <p style="font-size:13px;color:#86868b;margin-bottom:8px;">请复制以下内容，发送至内部试用群：</p>
+      <div class="summary-box" id="summaryText"></div>
+      <button class="btn-primary" id="copyBtn" style="margin-top:12px;padding:8px 24px;font-size:13px;">📋 复制摘要</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Radio group click styling
+document.querySelectorAll('.radio-group').forEach(group => {
+  group.addEventListener('click', (e) => {
+    const label = e.target.closest('label.radio-option');
+    if (!label) return;
+    group.querySelectorAll('label.radio-option').forEach(l => l.classList.remove('selected'));
+    label.classList.add('selected');
+  });
+});
+
+// Star rating
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const name = btn.dataset.name;
+    const value = parseInt(btn.dataset.value);
+    const row = btn.parentElement;
+    row.querySelectorAll('.star-btn').forEach((b, i) => {
+      b.classList.toggle('active', i < value);
+    });
+    document.getElementById(name + '-input').value = value;
+    const labels = { 1:'非常不准', 2:'不太准', 3:'一般', 4:'比较准', 5:'非常准' };
+    document.getElementById(name + '-label').textContent = '★'.repeat(value) + '☆'.repeat(5-value) + '  ' + (labels[value] || '');
+  });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function getVal(name) {
+  const radio = document.querySelector(`input[name="${name}"]:checked`);
+  return radio ? radio.value : '未填';
+}
+
+function getRequired(name) {
+  const radio = document.querySelector(`input[name="${name}"]:checked`);
+  return radio ? radio.value : null;
+}
+
+document.getElementById('feedbackForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const requiredFields = ['willing-to-start','smooth-process','accuracy','restraint','save-pdf','share','retest-30d','pay'];
+  const missing = requiredFields.filter(f => !getRequired(f));
+  if (missing.length > 0) {
+    showToast('⚠️ 请完成所有必填项（标注 *）');
+    return;
+  }
+
+  const data = {
+    willing: getVal('willing-to-start'),
+    smooth: getVal('smooth-process'),
+    accuracy: getVal('accuracy'),
+    restraint: getVal('restraint'),
+    best: document.querySelector('[name="best-sentence"]').value || '（未填写）',
+    worst: document.querySelector('[name="worst-sentence"]').value || '（未填写）',
+    savePdf: getVal('save-pdf'),
+    share: getVal('share'),
+    retest: getVal('retest-30d'),
+    pay: getVal('pay'),
+    other: document.querySelector('[name="other"]').value || '（无）',
+  };
+
+  const summary = `【AI 职场 X 光 反馈 · XRay_v1.0-rc1】
+━━━━━━━━━━━━━━━━━━
+📌 使用意愿：${data.willing}
+📌 过程顺畅：${data.smooth}
+📌 报告准确度：${data.accuracy}/5
+📌 报告克制度：${data.restraint}/5
+📌 最有用的：${data.best}
+📌 最不舒服的：${data.worst}
+📌 愿意保存/PDF：${data.savePdf}
+📌 愿意分享：${data.share}
+📌 愿意30天复测：${data.retest}
+📌 愿意付费：${data.pay}
+📌 其他：${data.other}
+━━━━━━━━━━━━━━━━━━`;
+
+  document.getElementById('summaryText').textContent = summary;
+  document.getElementById('summaryArea').style.display = 'block';
+  document.getElementById('summaryArea').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = '已生成';
+  showToast('✅ 反馈摘要已生成');
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = document.getElementById('summaryText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 已复制，请粘贴到试用群');
+  }).catch(() => {
+    showToast('⚠️ 复制失败，请手动选中复制');
+  });
+});
+</script>
+</body>
+</html>

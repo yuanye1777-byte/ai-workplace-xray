@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V1 内部验证 P0 修复总结</title>
+<style>
+  :root {
+    --bg: #0a0a0d;
+    --card: #131318;
+    --border: #2a2a33;
+    --text: #e4e4ec;
+    --muted: #8a8a9a;
+    --primary: #7c6ff7;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --code-bg: #1a1a22;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.8rem; margin-bottom: 0.3rem; color: #fff; }
+  h2 { font-size: 1.25rem; margin-top: 2.2rem; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); color: #ccc; }
+  h3 { font-size: 1.05rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text); }
+  p { margin-bottom: 0.8rem; color: var(--muted); }
+  ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--muted); }
+  li { margin-bottom: 0.35rem; }
+  .badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .badge-pass { background: rgba(52,211,153,0.12); color: var(--green); }
+  .badge-done { background: rgba(124,111,247,0.12); color: var(--primary); }
+  .badge-clear { background: rgba(52,211,153,0.12); color: var(--green); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .card h3 { margin-top: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    color: var(--text);
+    font-weight: 600;
+    background: rgba(255,255,255,0.03);
+  }
+  td { color: var(--muted); }
+  code {
+    background: var(--code-bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    color: #e2e2f0;
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0.5rem 0 1rem;
+    color: #ccc;
+  }
+  .file-tag {
+    font-size: 0.78rem;
+    color: var(--primary);
+    font-family: monospace;
+  }
+  .p0-zero {
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.25);
+    border-radius: 8px;
+    padding: 1rem 1.3rem;
+    margin: 1rem 0;
+  }
+  .p0-zero strong { color: var(--green); }
+  .highlight { color: var(--text); font-weight: 500; }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>V1 内部验证 P0 修复总结</h1>
+<p>日期：2026-08-07 · 轮次：P0 修复轮（仅 P0，不展开 P1/P2）</p>
+
+<!-- 1. 本轮修复结果 -->
+<h2>1. 本轮修复结果</h2>
+
+<div class="summary-grid">
+  <div class="card">
+    <h3>P0-1 scanMode 贯穿问诊链路</h3>
+    <span class="badge badge-done">已完成</span>
+    <p style="margin-top:0.5rem"><code>scanMode</code> 从首页选择 → 组件 props → AI service → 服务端函数 → 本地兜底引擎，全链路贯穿。</p>
+    <p class="file-tag">修改 4 个文件</p>
+  </div>
+  <div class="card">
+    <h3>P0-2 分类器避免推测进入事实</h3>
+    <span class="badge badge-done">已完成</span>
+    <p style="margin-top:0.5rem">新增 8 个推测/情绪/传闻/条件句模式，兜底逻辑改为"无行为线索 → 归推测"。13 例测试 13/13 通过。</p>
+    <p class="file-tag">修改 1 个文件 + 1 个测试脚本</p>
+  </div>
+  <div class="card" style="grid-column: 1 / -1;">
+    <h3>P0-3 首页补隐私/匿名说明</h3>
+    <span class="badge badge-done">已完成</span>
+    <p style="margin-top:0.5rem">输入框下方增加一行短说明，克制文案。不创建长隐私页。</p>
+    <p class="file-tag">修改 1 个文件</p>
+  </div>
+</div>
+
+<!-- 2. 测试结果 -->
+<h2>2. 测试结果</h2>
+
+<h3>2.1 分类器回归测试</h3>
+<div class="card">
+  <table>
+    <tr><th>#</th><th>场景</th><th>输入（摘要）</th><th>预期</th><th>结果</th></tr>
+    <tr><td>1</td><td>纯可观察事实</td><td>上周领导把年度规划会从我的日程移除</td><td>facts≥1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>2</td><td>推测 → 推测</td><td>我觉得领导可能想让我走</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>3</td><td>传闻 → 推测</td><td>听说上个月 HR 在面我的替代者</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>4</td><td>自我不确定 → 推测</td><td>我不能确认领导真实意图</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>5</td><td>主观印象 → 推测</td><td>领导最近好像对我很冷淡</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>6</td><td>条件/假设句 → 推测</td><td>如果下季度再不给核心项目</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>7</td><td>混合：事实+推测</td><td>上个月我被移除出核心群，估计领导想边缘化我</td><td>facts≥1, inferences≥1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>8</td><td>无行为线索 → 推测</td><td>最近职场位置好像变了</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>9</td><td>情绪 → 情绪</td><td>我很难受，晚上都睡不好</td><td>emotions=1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>10</td><td>判断 → 判断</td><td>领导就是看我不顺眼，故意针对我</td><td>judgments≥1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>11</td><td>反向证据</td><td>最近领导还在私下单独交给我新项目</td><td>reverse≥1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>12</td><td>时间线索 → 事实</td><td>上周五的周会没有通知我参加</td><td>facts≥1</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>13</td><td>因果推断 → 推测</td><td>所以领导肯定是要找人替代我了</td><td>facts=0</td><td><span class="badge badge-pass">通过</span></td></tr>
+  </table>
+  <p style="margin-top:0.5rem"><span class="badge badge-pass">13/13 通过</span> · 注意：测试 #9 中 "我很难受，晚上都睡不好" 因无标点切分，整句只产生 1 个 emotion 槽位（含"难受""觉得"），emotions=1 是正确的。</p>
+</div>
+
+<h3>2.2 构建结果</h3>
+<div class="card">
+  <p><span class="badge badge-pass">TypeScript 零错误</span> &nbsp; <span class="badge badge-pass">Vite build 成功</span></p>
+  <pre>✓ tsc --noEmit: 0 errors
+✓ vite build: modules transformed, built in ~8s</pre>
+</div>
+
+<!-- 3. 关键改动 -->
+<h2>3. 关键改动</h2>
+
+<h3>3.1 scanMode 传递链路</h3>
+<div class="card">
+  <p style="margin-bottom:1rem">全链路 4 层传递，不需要额外转换或映射：</p>
+  <table>
+    <tr><th>层级</th><th>文件</th><th>传递方式</th></tr>
+    <tr>
+      <td>用户选择</td>
+      <td class="file-tag">index.tsx L324-335</td>
+      <td>快速/深度 按钮 → <code>useState&lt;ScanMode&gt;</code></td>
+    </tr>
+    <tr>
+      <td>组件 props</td>
+      <td class="file-tag">index.tsx L107, L133, L445</td>
+      <td><code>scanMode</code> 传入 Home / Interview 子组件</td>
+    </tr>
+    <tr>
+      <td>AI Service 调用</td>
+      <td class="file-tag">index.tsx L476</td>
+      <td><code>aiService.nextQuestion(initial, history, scanMode)</code></td>
+    </tr>
+    <tr>
+      <td>服务端函数</td>
+      <td class="file-tag">interview.functions.ts L58-61, L135-145</td>
+      <td>Zod schema 接收 <code>scanMode</code>；硬上限 quick=5 deep=10；回退本地引擎时传递</td>
+    </tr>
+    <tr>
+      <td>本地兜底引擎</td>
+      <td class="file-tag">interview.ts L72-77</td>
+      <td><code>chooseNextQuestion(initial, history, minRounds, scanMode)</code></td>
+    </tr>
+    <tr>
+      <td>类型定义</td>
+      <td class="file-tag">types.ts L117</td>
+      <td>新增 <code>export type ScanMode = "quick" | "deep"</code></td>
+    </tr>
+  </table>
+</div>
+
+<h3>3.2 quick / deep 策略差异</h3>
+<div class="card">
+  <table>
+    <tr><th>策略维度</th><th>快速模式 (quick)</th><th>深度模式 (deep)</th></tr>
+    <tr><td>最大轮次</td><td>5 轮</td><td>10 轮</td></tr>
+    <tr><td>核心路径</td><td>首轮维度 → 澄清(如需) → 时间趋势 → 反向验证 → 最强维度</td><td>首轮维度 → 澄清(如需) → 补弱维度 → 时间趋势 → 反向验证 → 全部维度</td></tr>
+    <tr><td>时间趋势插入</td><td>第 2 轮即可（提前）</td><td>第 3-4 轮</td></tr>
+    <tr><td>反向验证插入</td><td>第 3 轮即可（提前）</td><td>覆盖 ≥3 维度 或 第 5 轮后</td></tr>
+    <tr><td>维度覆盖策略</td><td>优先深入信号最强的维度（coverage 从高到低）</td><td>优先补足信号最弱的维度（coverage 从低到高）</td></tr>
+    <tr><td>结束条件</td><td>达到 5 轮自动结束</td><td>minRounds + coveredDims≥3 + trendAsked + reverseAsked</td></tr>
+  </table>
+  <p style="margin-top:0.8rem">快速模式的核心设计理念：<span class="highlight">不是从 10 轮中截断</span>，而是独立的 5 轮覆盖路径——优先拿到核心事实、时间线、反向证据、最突出问题维度。</p>
+</div>
+
+<h3>3.3 分类器新增识别模式</h3>
+<div class="card">
+  <table>
+    <tr><th>模式类别</th><th>新增词汇/正则</th><th>归属</th></tr>
+    <tr><td>主观感受词</td><td><code>觉得</code>（新增至 EMOTION_WORDS）</td><td>情绪</td></tr>
+    <tr><td>传闻词</td><td><code>听说</code>、<code>看来</code></td><td>推测</td></tr>
+    <tr><td>模糊修饰</td><td><code>好像</code>、<code>似乎</code></td><td>推测</td></tr>
+    <tr><td>因果推断</td><td><code>应该是</code>、<code>应该是想</code>、<code>估计</code></td><td>推测</td></tr>
+    <tr><td>条件/假设</td><td><code>我会认为</code>、<code>我会觉得</code>、<code>再...的话</code>、<code>继续...的话</code></td><td>推测（条件句）</td></tr>
+    <tr><td>兜底逻辑</td><td>无行为+无时间线索 → 归入推测（<code>inferences</code>），不再默认归事实</td><td>—</td></tr>
+  </table>
+</div>
+
+<h3>3.4 首页隐私文案</h3>
+<div class="card">
+  <p><strong>位置：</strong>输入框下方，统计提示之前</p>
+  <p><strong>文案：</strong></p>
+  <pre style="font-size:0.95rem; padding:0.6rem 1rem;">不需登录 · 匿名存储 · 分享不暴露原始输入 · 你的数据只属于你</pre>
+  <p>展示样式：<code>text-[11px] text-center text-muted-foreground/60</code>，小字、居中、低对比度，克制不突兀。</p>
+</div>
+
+<!-- 4. 剩余问题 -->
+<h2>4. 剩余问题</h2>
+
+<div class="p0-zero">
+  <strong>P0 清零 ✅</strong> — 本轮 3 个 P0 问题全部修复并通过验证。<br>
+  测试通过率 100%（13/13），构建零错误。
+</div>
+
+<h3>P1 / P2 继续保留在统一清单</h3>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>级别</th><th>问题</th><th>状态</th></tr>
+    <tr><td>P1-4</td><td><span class="badge" style="background:rgba(251,191,36,0.12);color:var(--yellow)">P1</span></td><td>inferences + openAssumptions 合并展示，"不能确认的部分"信息重叠</td><td>待修</td></tr>
+    <tr><td>P1-5</td><td><span class="badge" style="background:rgba(251,191,36,0.12);color:var(--yellow)">P1</span></td><td>misjudgment / secondaryIssues / potentialRisks 三个报告字段未渲染</td><td>待修</td></tr>
+    <tr><td>P1-6</td><td><span class="badge" style="background:rgba(251,191,36,0.12);color:var(--yellow)">P1</span></td><td>系统提示词缺 4 项边界规则（法律/心理/职业决定/他人意图）</td><td>待修</td></tr>
+    <tr><td>P1-7</td><td><span class="badge" style="background:rgba(251,191,36,0.12);color:var(--yellow)">P1</span></td><td>模式按钮 390px 宽度溢出</td><td>待修</td></tr>
+    <tr><td>P1-8</td><td><span class="badge" style="background:rgba(251,191,36,0.12);color:var(--yellow)">P1</span></td><td>分享 API 暴露完整 report_data</td><td>待修</td></tr>
+    <tr><td>P2-9</td><td><span style="color:var(--muted)">P2</span></td><td>未使用参数 / 依赖数组不完整</td><td>待修</td></tr>
+    <tr><td>P2-10</td><td><span style="color:var(--muted)">P2</span></td><td>headlineFor 边界低估（所有维度 0 分场景）</td><td>待修</td></tr>
+    <tr><td>P2-11</td><td><span style="color:var(--muted)">P2</span></td><td>历史记录列表无分页</td><td>待修</td></tr>
+    <tr><td>P2-12</td><td><span style="color:var(--muted)">P2</span></td><td>canFinishEarly 仍硬编码 10 轮</td><td>待修</td></tr>
+    <tr><td>P2-13</td><td><span style="color:var(--muted)">P2</span></td><td>PDF 长报告分页可能重叠（需真机验证）</td><td>待修</td></tr>
+  </table>
+</div>
+
+<!-- 5. 下一步建议 -->
+<h2>5. 下一步建议</h2>
+
+<div class="card">
+  <h3>进入 P0 复测</h3>
+  <p>复测范围 <strong>仅限以下 4 项</strong>，不扩展到 P1/P2：</p>
+  <ol>
+    <li><strong>快速 5 轮是否真正按 quick 策略出题</strong>
+      <ul>
+        <li>检查首轮是否标注"快速模式"</li>
+        <li>第 2 轮是否出现时间趋势（而非第 3 轮）</li>
+        <li>第 3 轮是否出现反向验证</li>
+        <li>后续轮次是否深入信号最强的维度（而非最弱维度）</li>
+        <li>第 5 轮后是否正确结束</li>
+      </ul>
+    </li>
+    <li><strong>深度 10 轮是否按 deep 策略出题</strong>
+      <ul>
+        <li>检查时间趋势在第 3-4 轮插入</li>
+        <li>反向验证在覆盖 3 维度或 5 轮后插入</li>
+        <li>补足最弱维度（而非最强维度）</li>
+        <li>最多 10 轮自动结束</li>
+      </ul>
+    </li>
+    <li><strong>6 类报告质量场景中的分类器表现</strong>
+      <ul>
+        <li>轻微信息缺失 → 不应过度断言</li>
+        <li>中度边缘化 → 不把推测当事实</li>
+        <li>高风险替代 → 指出不能确认的部分</li>
+        <li>反向证据明显 → 有可执行观察计划</li>
+        <li>情绪强但事实少 → 不把情绪当事实</li>
+        <li>条件句/未来观察 → 不归入已确认事实</li>
+      </ul>
+    </li>
+    <li><strong>首页隐私说明是否可见</strong>
+      <ul>
+        <li>输入框下方有"不需登录 · 匿名存储 · 分享不暴露原始输入 · 你的数据只属于你"</li>
+        <li>桌面端和 390px 移动端均可读</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h3>修改文件清单</h3>
+<div class="card">
+  <table>
+    <tr><th>文件</th><th>P0</th><th>变更类型</th></tr>
+    <tr><td class="file-tag">src/lib/ai/types.ts</td><td>P0-1</td><td>新增 <code>ScanMode</code> 类型导出，AIService 接口增加 scanMode 参数</td></tr>
+    <tr><td class="file-tag">src/lib/ai/interview.ts</td><td>P0-1</td><td><code>chooseNextQuestion</code> 接收 scanMode，实现快速模式专属 5 轮路径</td></tr>
+    <tr><td class="file-tag">src/lib/ai/interview.functions.ts</td><td>P0-1</td><td>Zod schema 接收 scanMode，服务端按 quick/deep 设硬上限，回退传递</td></tr>
+    <tr><td class="file-tag">src/routes/index.tsx</td><td>P0-1, P0-3</td><td>传递 scanMode 给 AI service，首页新增隐私说明行</td></tr>
+    <tr><td class="file-tag">src/lib/ai/classifier.ts</td><td>P0-2</td><td>SPECULATION_PATTERNS 新增 5 组模式，EMOTION_WORDS 新增"觉得"，INFERENCE_PATTERNS 新增 2 组，兜底逻辑改为"无行为线索 → 推测"</td></tr>
+    <tr><td class="file-tag">scripts/test-classifier.mjs</td><td>P0-2</td><td>新增：13 例回归测试</td></tr>
+  </table>
+</div>
+
+</body>
+</html>

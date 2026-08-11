@@ -1,0 +1,233 @@
+{
+  "quick": {
+    "ctaText": "快速 X 光扫描→",
+    "firstRoundLabel": "第 1/5 轮关系",
+    "roundLabels": [
+      "第 1/5 轮关系",
+      "第 2/5 轮时间趋势",
+      "第 3/5 轮反向验证",
+      "第 4/5 轮资源",
+      "第 5/5 轮权力"
+    ],
+    "finalRoundLabel": "第 5/5 轮",
+    "finalRound": 5,
+    "totalRounds": 5,
+    "didNotExceed": true,
+    "scanButtonVisible": true,
+    "reportVisible": true,
+    "report": {
+      "headline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+      "score": "81",
+      "level": "变化显著",
+      "topSignals": [
+        "#1三个月前开始，周一例会不再由我主持",
+        "#2领导让同事小王代替主持周一例会"
+      ],
+      "deepSections": {
+        "evidenceChain": false,
+        "reverseEvidence": false,
+        "infoGap": false,
+        "actions": true
+      }
+    },
+    "deepSections": {
+      "evidenceChain": false,
+      "reverseEvidence": false,
+      "infoGap": false,
+      "actions": true
+    },
+    "logs": [
+      "[Interview] effect fired: round=0 history.length=0 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=0 TARGET_ROUNDS=5",
+      "[Interview] effect fired: round=1 history.length=1 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=1 TARGET_ROUNDS=5",
+      "[Interview] effect fired: round=2 history.length=2 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=2 TARGET_ROUNDS=5",
+      "[Interview] effect fired: round=3 history.length=3 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=3 TARGET_ROUNDS=5",
+      "[Interview] effect fired: round=4 history.length=4 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=4 TARGET_ROUNDS=5",
+      "[Interview] effect fired: round=5 history.length=5 scanMode=quick TARGET_ROUNDS=5",
+      "[Interview] nextQuestion resolved: res.done=true forcedDone=true history.length=5 TARGET_ROUNDS=5"
+    ],
+    "screenshots": [
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-01-home.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-02-interview-start.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-03-round-1-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-03-round-2-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-03-round-3-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-03-round-4-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-03-round-5-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-04-interview-done.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/quick-05-report.png"
+    ]
+  },
+  "deep": {
+    "ctaText": "深度 X 光扫描→",
+    "firstRoundLabel": "第 1/10 轮",
+    "roundLabels": [
+      "第 1/10 轮",
+      "第 2/10 轮",
+      "第 3/10 轮",
+      "第 4/10 轮",
+      "第 5/10 轮",
+      "第 6/10 轮",
+      "第 7/10 轮",
+      "第 8/10 轮",
+      "第 9/10 轮",
+      "第 10/10 轮"
+    ],
+    "finalRoundLabel": "第 10/10 轮",
+    "finalRound": 10,
+    "totalRounds": 10,
+    "didNotExceed": true,
+    "scanButtonVisible": true,
+    "reportVisible": true,
+    "report": {
+      "headline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+      "score": "82",
+      "level": "变化显著",
+      "topSignals": [
+        "#1三个月前开始，周一例会不再由我主持，领导让同事小王代替",
+        "#2我的核心资源虽然被转移了一部分，但手里还有一些长期客户关系"
+      ],
+      "deepSections": {
+        "evidenceChain": true,
+        "reverseEvidence": false,
+        "infoGap": true,
+        "actions": true
+      }
+    },
+    "deepSections": {
+      "evidenceChain": true,
+      "reverseEvidence": false,
+      "infoGap": true,
+      "actions": true
+    },
+    "logs": [
+      "[Interview] effect fired: round=0 history.length=0 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=0 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=1 history.length=1 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=1 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=2 history.length=2 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=2 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=3 history.length=3 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=3 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=4 history.length=4 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=4 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=5 history.length=5 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=5 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=6 history.length=6 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=6 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=7 history.length=7 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=7 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=8 history.length=8 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=8 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=9 history.length=9 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=9 TARGET_ROUNDS=10",
+      "[Interview] effect fired: round=10 history.length=10 scanMode=deep TARGET_ROUNDS=10",
+      "[Interview] nextQuestion resolved: res.done=true forcedDone=true history.length=10 TARGET_ROUNDS=10"
+    ],
+    "screenshots": [
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-01-home.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-02-interview-start.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-1-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-2-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-3-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-4-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-5-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-6-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-7-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-8-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-9-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-03-round-10-answered.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-04-interview-done.png",
+      "/Users/olivia/WorkBuddy/2026-08-05-13-47-33/zcsm/scripts/rc-rounds-output/deep-05-report.png"
+    ]
+  },
+  "comparison": {
+    "ctaText": {
+      "quick": "快速 X 光扫描→",
+      "deep": "深度 X 光扫描→",
+      "quickCorrect": true,
+      "deepCorrect": true
+    },
+    "rounds": {
+      "quickMax": 5,
+      "deepMax": 10,
+      "quickDidNotExceed": true,
+      "deepDidNotExceed": true,
+      "quickExceedsSix": false,
+      "deepExceedsTen": false
+    },
+    "roundLabels": {
+      "quick": [
+        "第 1/5 轮关系",
+        "第 2/5 轮时间趋势",
+        "第 3/5 轮反向验证",
+        "第 4/5 轮资源",
+        "第 5/5 轮权力"
+      ],
+      "deep": [
+        "第 1/10 轮",
+        "第 2/10 轮",
+        "第 3/10 轮",
+        "第 4/10 轮",
+        "第 5/10 轮",
+        "第 6/10 轮",
+        "第 7/10 轮",
+        "第 8/10 轮",
+        "第 9/10 轮",
+        "第 10/10 轮"
+      ]
+    },
+    "report": {
+      "quickVisible": true,
+      "deepVisible": true,
+      "quickHeadline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+      "deepHeadline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+      "quickScore": "81",
+      "deepScore": "82",
+      "quickTopSignals": [
+        "#1三个月前开始，周一例会不再由我主持",
+        "#2领导让同事小王代替主持周一例会"
+      ],
+      "deepTopSignals": [
+        "#1三个月前开始，周一例会不再由我主持，领导让同事小王代替",
+        "#2我的核心资源虽然被转移了一部分，但手里还有一些长期客户关系"
+      ],
+      "quickDeepSections": {
+        "evidenceChain": false,
+        "reverseEvidence": false,
+        "infoGap": false,
+        "actions": true
+      },
+      "deepDeepSections": {
+        "evidenceChain": true,
+        "reverseEvidence": false,
+        "infoGap": true,
+        "actions": true
+      },
+      "quickHasDeepSections": false,
+      "deepHasDeepSections": true
+    },
+    "consistency": {
+      "quick": {
+        "passed": true,
+        "issues": [],
+        "headline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+        "score": "81",
+        "level": "变化显著",
+        "topSignalsCount": 2
+      },
+      "deep": {
+        "passed": true,
+        "issues": [],
+        "headline": "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。",
+        "score": "82",
+        "level": "变化显著",
+        "topSignalsCount": 2
+      }
+    }
+  }
+}

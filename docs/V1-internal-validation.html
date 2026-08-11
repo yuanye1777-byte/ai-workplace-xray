@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V1 内部验证报告 — AI 职场 X 光</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666666;
+    --border: #e5e5e5;
+    --card: #f8f8f8;
+    --red: #dc2626;
+    --amber: #d97706;
+    --blue: #2563eb;
+    --green: #16a34a;
+    --tag-red-bg: #fef2f2;
+    --tag-red-fg: #dc2626;
+    --tag-amber-bg: #fffbeb;
+    --tag-amber-fg: #d97706;
+    --tag-blue-bg: #eff6ff;
+    --tag-blue-fg: #2563eb;
+    --tag-green-bg: #f0fdf4;
+    --tag-green-fg: #16a34a;
+  }
+  body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 48px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 32px;
+    color: #333;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 24px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+  }
+  th {
+    background: var(--card);
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+  }
+  tr:last-child td { border-bottom: none; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tag-p0 { background: var(--tag-red-bg); color: var(--tag-red-fg); }
+  .tag-p1 { background: var(--tag-amber-bg); color: var(--tag-amber-fg); }
+  .tag-p2 { background: var(--tag-blue-bg); color: var(--tag-blue-fg); }
+  .tag-ok { background: var(--tag-green-bg); color: var(--tag-green-fg); }
+  .tag-fix { background: #f0fdf4; color: #16a34a; }
+  .check { color: var(--green); }
+  .fail { color: var(--red); }
+  .warn { color: var(--amber); }
+  .section-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    background: var(--card);
+  }
+  .card h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+  .card p { margin: 4px 0; font-size: 14px; color: #444; }
+  .scenario-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    background: #fafafa;
+  }
+  .scenario-block h4 { margin: 0 0 8px; font-size: 14px; }
+  .scenario-block pre {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin: 8px 0 0;
+    color: #333;
+  }
+  .checklist { margin: 8px 0 16px; padding-left: 20px; }
+  .checklist li { margin: 4px 0; font-size: 14px; }
+  .findings-list { margin: 8px 0; padding-left: 20px; }
+  .findings-list li { margin: 8px 0; font-size: 14px; }
+  .code { font-family: "SF Mono", "Fira Code", monospace; font-size: 13px; background: #f0f0f0; padding: 1px 6px; border-radius: 3px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+</style>
+</head>
+<body>
+
+<h1>V1 内部验证报告</h1>
+<p class="subtitle">
+  AI 职场 X 光 — 轻量职场位置预警产品<br>
+  验证日期：2026-08-07 &nbsp;|&nbsp; 验证范围：代码级静态审计 + 测试场景准备 &nbsp;|&nbsp; 共发现 <strong>13</strong> 个问题（P0×3 / P1×5 / P2×5）
+</p>
+
+<!-- ============================== -->
+<h2>一、核心链路稳定性</h2>
+
+<h3>1.1 首页输入 50 字门槛</h3>
+<table>
+  <tr><th>检查项</th><th>状态</th><th>位置</th><th>说明</th></tr>
+  <tr>
+    <td>MIN_CHARS = 50</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:261</span></td>
+    <td>阈值正确</td>
+  </tr>
+  <tr>
+    <td>字数计算排除空白</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:268</span></td>
+    <td><span class="code">initial.replace(/\s/g, "").length</span></td>
+  </tr>
+  <tr>
+    <td>开始按钮 disabled</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:366</span></td>
+    <td><span class="code">disabled={!enough}</span></td>
+  </tr>
+  <tr>
+    <td>提示文案正确</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:269</span></td>
+    <td>"至少输入 50 字，AI 会通过追问补齐关键信息"</td>
+  </tr>
+</table>
+
+<h3>1.2 快速/深度问诊 ⚠️ 发现严重问题</h3>
+
+<div class="card" style="border-color: var(--red);">
+  <h4><span class="fail">P0</span> scanMode 未传入服务端，快速模式（5轮）服务端按 10 轮策略出题</h4>
+  <p><strong>根因链：</strong></p>
+  <ol style="font-size:14px; margin:8px 0; padding-left:20px;">
+    <li>客户端 <span class="code">TARGET_ROUNDS = scanMode === "quick" ? 5 : 10</span>（454行）通过 <span class="code">forcedDone</span> 在第 5 轮截断</li>
+    <li>但 <span class="code">aiService.nextQuestion(initial, history)</span>（472行）<strong>不含 scanMode 参数</strong></li>
+    <li>服务端 <span class="code">nextTurnFn</span> 硬编码 <span class="code">FORCE_MIN_ROUNDS = 10</span>（interview.functions.ts:246），即使 AI 想结束也强制继续到 10 轮</li>
+    <li>本地引擎 <span class="code">chooseNextQuestion(initial, history, minRounds=10)</span>（interview.ts:75）同样硬编码 10 轮</li>
+  </ol>
+  <p><strong>影响：</strong>快速模式下，AI/本地引擎按 10 轮策略分配维度覆盖顺序和时间趋势/反向验证的插入时机。</p>
+  <ul style="font-size:14px; padding-left:20px;">
+    <li>5 个维度可能覆盖不全（replace 维度排在最后，快速模式大概率未问到）</li>
+    <li>时间趋势（第 3 轮起插入）和反向验证（覆盖 3 维度后或第 5 轮）可能来不及</li>
+    <li>报告质量在快速模式下<strong>显著低于深度模式</strong></li>
+  </ul>
+</div>
+
+<h3>1.3 报告生成 / 历史记录 / 重新扫描</h3>
+<table>
+  <tr><th>检查项</th><th>状态</th><th>位置</th><th>说明</th></tr>
+  <tr>
+    <td>报告生成流程</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:533-600</span></td>
+    <td>AI 生成 → sanitize → 本地 fallback；错误有 catch 并设置 reportError</td>
+  </tr>
+  <tr>
+    <td>历史保存</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">tracking.functions.ts</span></td>
+    <td>startAssessmentFn + completeAssessmentFn 完整保存 turns/diagnosis/baseline</td>
+  </tr>
+  <tr>
+    <td>错误静默吞掉</td>
+    <td><span class="warn">⚠</span></td>
+    <td><span class="code">index.tsx:170</span></td>
+    <td>所有 tracking 错误被 <span class="code">.catch(() => {})</span> 静默，DB 写失败用户无感知</td>
+  </tr>
+  <tr>
+    <td>重新扫描</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">index.tsx:200-207</span></td>
+    <td>重置所有状态（initial/history/report/reportError）并清除 localStorage 草稿</td>
+  </tr>
+</table>
+
+<h3>1.4 控制台 error 检查</h3>
+<table>
+  <tr><th>发现</th><th>严重度</th><th>位置</th></tr>
+  <tr>
+    <td><span class="code">assessmentIdRef</span> 接收但未使用（无用参数）</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td><span class="code">index.tsx:762</span></td>
+  </tr>
+  <tr>
+    <td><span class="code">textRef</span> 创建但从未读取</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td><span class="code">index.tsx:262</span></td>
+  </tr>
+  <tr>
+    <td>useEffect 依赖数组不完整（<span class="code">[round]</span> 缺 initial/history/TARGET_ROUNDS）</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td><span class="code">index.tsx:500</span></td>
+  </tr>
+</table>
+
+<hr>
+
+<!-- ============================== -->
+<h2>二、报告质量测试场景</h2>
+
+<p>以下 6 类模拟案例涵盖了职场信号的主要典型场景，每类需分别用快速和深度模式测试。</p>
+
+<div class="scenario-block">
+  <h4>场景 1：轻微信息缺失</h4>
+  <p style="font-size:13px; color:var(--muted);">只是沟通变少，无明显权力/资源变化</p>
+  <pre>最近两个月感觉领导和我的沟通变少了。之前每周都有一次一对一的对齐会，现在已经连续三周没安排了。我主动约了一次，他回说最近太忙先放放。其他方面好像都还正常，我手头的项目也没被拿走，团队也照常在带。</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>不应用"边缘化"等词；评分应在 30 以下；反向证据（项目仍在/团队照带）应扣分。</p>
+</div>
+
+<div class="scenario-block">
+  <h4>场景 2：中度边缘化</h4>
+  <p style="font-size:13px; color:var(--muted);">会议/信息/资源开始绕过你</p>
+  <pre>上个月开始发现几个不对劲的地方。第一个是周一的部门战略会，我居然没收到会议邀请，后来从同事那里才知道开了。第二个是之前一直由我负责的大客户方案，现在领导直接让另外一个同事在做，没有跟我说。第三个是预算审批原来是我签字就行，上周财务说以后要领导加签。感觉这些事情不是偶然的。</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>可识别信息/资源/决策三个维度的变化；"感觉不是偶然"应归入推测，不应作为已确认事实；应有具体观察计划。</p>
+</div>
+
+<div class="scenario-block">
+  <h4>场景 3：高风险替代</h4>
+  <p style="font-size:13px; color:var(--muted);">新人承接核心职责，可持续信号</p>
+  <pre>我们组两个月前来了一个高级经理，级别和我一样。一开始领导说是帮我分担工作量，我也没多想。但最近一个月，他先是接走了我手上最大的两个项目，然后开始参加我之前负责的外部客户会议，上周甚至开始对接我原来直接汇报的下属。我问领导我的职责会不会调整，领导说让我多带带新人，后面再看。我现在基本上没有什么核心业务在手里了。</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>风险评分应较高（60+）；必须有"不能确认"部分（领导真实意图无法判断）；"让我多带带新人"应作为可观察行为，不当成结论。</p>
+</div>
+
+<div class="scenario-block">
+  <h4>场景 4：反向证据明显</h4>
+  <p style="font-size:13px; color:var(--muted);">工作量仍大、领导仍信任，但用户焦虑</p>
+  <pre>我最近很焦虑，因为公司架构调整后，大老板换了，新来的领导我不熟。但我仔细想想，客观事实是：我手头的工作量比去年还增加了30%，刚上个月领导还在全部门会议上表扬了我带的项目，说成果很好。上周他还私下找我聊，说希望我牵头一个新项目。但我就是很担心，感觉新环境里自己位置不稳。总觉得会有不好的事情发生。</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>反向证据应有效扣分（表扬/新项目/私下聊天）；"感觉位置不稳""总觉得有不好的事"不应算事实；用户焦虑情绪应记录但不拉高风险。</p>
+</div>
+
+<div class="scenario-block">
+  <h4>场景 5：情绪强但事实少</h4>
+  <p style="font-size:13px; color:var(--muted);">用户焦虑但可观察证据不足</p>
+  <pre>我感觉领导最近对我不太好，好像不太喜欢我了。以前他有什么事都会先跟我说，现在好像直接跳过我找别人。有一次开会我提了一个建议，他也没理我。我不确定是不是我想多了，但就是觉得氛围不对。我很难受，晚上都睡不好。</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>报告应明确指出"当前可观察事实不足"；"觉得氛围不对""不喜欢我"应归为情绪/判断；不宜给出高评分。</p>
+</div>
+
+<div class="scenario-block">
+  <h4>场景 6：条件句/未来观察</h4>
+  <p style="font-size:13px; color:var(--muted);">用户说"如果接下来……"</p>
+  <pre>我发现最近三个月，领导和我的一对一从每周改成了每月，而且时间经常被临时取消。另外团队新招了一个人，目前还在熟悉阶段，但如果接下来他把我的核心客户慢慢接过去，我可能会被边缘化。现在一切还正常，但我担心半年后情况会变。我是该现在就找领导谈，还是再观察一段时间？</pre>
+  <p style="font-size:13px; margin-top:8px;"><strong>检查要点：</strong>"如果接下来他把核心客户接过去"不应进入已确认事实；观察计划应针对"一对一频率"和"新人是否接触核心客户"这两个可观察信号；不应替用户做"该不该找领导谈"的决定。</p>
+</div>
+
+<h3>报告质量代码级发现</h3>
+
+<div class="card" style="border-color: var(--red);">
+  <h4><span class="fail">P0</span> 分类器兜底逻辑：推测性表述漏入事实</h4>
+  <p><strong>位置：</strong><span class="code">classifier.ts:130-136</span></p>
+  <p>以下常见推测词 <strong>未在任何模式数组中</strong>，会在兜底逻辑（≥6 字即事实）中被误判：</p>
+  <table>
+    <tr><th>用户表述</th><th>漏网原因</th><th>当前分类</th></tr>
+    <tr><td>"我觉得他不太对劲"</td><td><span class="code">觉得</span> 不在 EMOTION_WORDS（只有 <span class="code">觉得心里</span>），不在 SPECULATION_PATTERNS</td><td><span class="fail">事实</span></td></tr>
+    <tr><td>"好像有点不对"</td><td><span class="code">好像</span> 不在任何数组中</td><td><span class="fail">事实</span></td></tr>
+    <tr><td>"听说领导要换人"</td><td><span class="code">听说</span> 不在任何数组中</td><td><span class="fail">事实</span></td></tr>
+    <tr><td>"看来他不想用我了"</td><td><span class="code">看来</span> 不在任何数组中</td><td><span class="fail">事实</span></td></tr>
+    <tr><td>"应该是想让我走"</td><td><span class="code">应该是</span> 不在 INFERENCE_PATTERNS（只有 <span class="code">估计是</span>）</td><td><span class="fail">事实</span></td></tr>
+    <tr><td>"估计领导对我有意见"</td><td><span class="code">估计</span> 不在任何数组中</td><td><span class="fail">事实</span></td></tr>
+  </table>
+</div>
+
+<div class="card" style="border-color: var(--amber);">
+  <h4><span class="warn">P1</span> 三个报告字段已生成但 UI 未渲染</h4>
+  <p>以下 <span class="code">Report</span> 类型中的字段在 <span class="code">report-presenter.ts</span> 和本地报告生成器中有完整实现，但 <span class="code">ReportView</span> 组件完全没有展示：</p>
+  <ul class="findings-list">
+    <li><span class="code">report.misjudgment</span> — "最容易误判的地方"（AI 会生成，本地也会生成）</li>
+    <li><span class="code">report.secondaryIssues</span> — 次级问题列表</li>
+    <li><span class="code">report.potentialRisks</span> — 潜在风险</li>
+  </ul>
+</div>
+
+<div class="card" style="border-color: var(--amber);">
+  <h4><span class="warn">P1</span> inferences 与 openAssumptions 合并展示</h4>
+  <p><strong>位置：</strong><span class="code">index.tsx:922-925</span></p>
+  <p><span class="code">[...judgements, ...assumptions]</span>（即 inferences + openAssumptions）合并在一个 FactCard 中展示为"目前的判断"。用户无法区分哪些是 AI 的逻辑推断、哪些是自己提供的未验证假设。</p>
+</div>
+
+<hr>
+
+<!-- ============================== -->
+<h2>三、移动端 390px 验证</h2>
+
+<div class="card" style="border-color: var(--amber);">
+  <h4><span class="warn">P1</span> 扫描模式按钮在 390px 下会溢出</h4>
+  <p><strong>位置：</strong><span class="code">index.tsx:320</span></p>
+  <p><span class="code">&lt;div className="mb-3 flex gap-2"&gt;</span> 无 <span class="code">flex-wrap</span>，两个按钮（"快速扫描 · 5 轮 · 约 3–5 分钟" + "深度扫描 · 10 轮 · 约 8–10 分钟"）在 390px 宽度下约 410px，会横向溢出。</p>
+  <p><strong>修复：</strong>添加 <span class="code">flex-wrap</span> 或移动端改为 <span class="code">flex-col</span></p>
+</div>
+
+<table>
+  <tr><th>区域</th><th>响应式类</th><th>390px 表现</th></tr>
+  <tr><td>TopBar</td><td><span class="code">px-4 sm:px-6</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>Home 主区域</td><td><span class="code">max-w-4xl px-4 sm:px-6</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>维度卡片</td><td><span class="code">grid-cols-2 sm:grid-cols-5</span></td><td><span class="check">✓</span> 2 列</td></tr>
+  <tr><td>功能介绍</td><td><span class="code">grid gap-3 sm:grid-cols-2</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>扫描模式按钮</td><td><span class="code">flex gap-2</span>（无 wrap）</td><td><span class="fail">✗</span> 溢出</td></tr>
+  <tr><td>输入框</td><td><span class="code">w-full</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>Interview</td><td><span class="code">max-w-3xl px-4 sm:px-6</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>提交按钮</td><td><span class="code">flex-col-reverse sm:flex-row</span></td><td><span class="check">✓</span> 纵向堆叠</td></tr>
+  <tr><td>Report</td><td><span class="code">max-w-5xl px-4 sm:px-6</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>分数卡</td><td><span class="code">grid lg:grid-cols-[1.4fr,1fr]</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>Top 信号</td><td><span class="code">grid sm:grid-cols-3</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>五维评分</td><td><span class="code">grid sm:grid-cols-2 lg:grid-cols-3</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>事实/判断</td><td><span class="code">grid lg:grid-cols-2</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>可能性</td><td><span class="code">grid sm:grid-cols-3</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>Do/Don't</td><td><span class="code">grid lg:grid-cols-2</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>行动</td><td><span class="code">grid lg:grid-cols-3</span></td><td><span class="check">✓</span> 1 列</td></tr>
+  <tr><td>分享弹窗</td><td><span class="code">max-w-lg p-4</span></td><td><span class="check">✓</span> 正常</td></tr>
+  <tr><td>历史列表</td><td><span class="code">px-4 sm:px-6</span></td><td><span class="check">✓</span> 正常</td></tr>
+</table>
+
+<hr>
+
+<!-- ============================== -->
+<h2>四、分享 / PDF 验证</h2>
+
+<table>
+  <tr><th>检查项</th><th>状态</th><th>说明</th></tr>
+  <tr>
+    <td>分享摘要不含原始输入</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">buildShareSummary</span> 只含 headline/等级/评分/top3 信号/观察</td>
+  </tr>
+  <tr>
+    <td>分享弹窗有提示文案</td>
+    <td><span class="check">✓</span></td>
+    <td>"以下摘要适合发送给朋友或发到社交媒体，不包含你的原始输入"</td>
+  </tr>
+  <tr>
+    <td>复制按钮</td>
+    <td><span class="check">✓</span></td>
+    <td>使用 <span class="code">navigator.clipboard.writeText</span></td>
+  </tr>
+  <tr>
+    <td>PDF onclone 清除 oklch 样式表</td>
+    <td><span class="check">✓</span></td>
+    <td><span class="code">doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(el => el.remove())</span></td>
+  </tr>
+  <tr>
+    <td>PDF 注入纯 hex CSS</td>
+    <td><span class="check">✓</span></td>
+    <td>完整覆盖 CSS 变量/布局/间距/字体/颜色/边框</td>
+  </tr>
+  <tr>
+    <td>PDF 长报告分页</td>
+    <td><span class="check">✓</span></td>
+    <td>while 循环分页 + 降级缩放（2 → 1.5 → 1）</td>
+  </tr>
+  <tr>
+    <td>分享页 API 暴露完整 report_data</td>
+    <td><span class="warn">⚠</span></td>
+    <td><span class="code">getSharedReport</span> 返回完整数据（含 knownFacts），可能包含敏感职场细节。虽然分享页面只展示前 5 条，但 API 层面可被直接调用。非安全问题（链接即公开），但应注意。</td>
+  </tr>
+</table>
+
+<hr>
+
+<!-- ============================== -->
+<h2>五、隐私与边界</h2>
+
+<div class="card" style="border-color: var(--red);">
+  <h4><span class="fail">P0</span> 首页完全缺少隐私/匿名策略声明</h4>
+  <p><strong>位置：</strong><span class="code">index.tsx:238-243</span></p>
+  <p>首页 Footer 只有免责声明：<em>"本工具仅提供职场信号分析与风险框架，不构成职业建议。所有分析基于你自己提供的信息，请结合实际行为持续验证。"</em></p>
+  <p>用户完全不知道数据是否匿名、存储在哪里、保留多久、谁可以访问。技术实现上使用了匿名 Cookie（<span class="code">xray_uid, HttpOnly</span>），但用户不知情。</p>
+</div>
+
+<div class="card" style="border-color: var(--amber);">
+  <h4><span class="warn">P1</span> 系统提示词缺少四项边界规则</h4>
+  <p><strong>位置：</strong><span class="code">prompts.server.ts:147-199</span>（REPORT_SYSTEM_PROMPT）</p>
+  <table>
+    <tr><th>边界要求</th><th>状态</th><th>说明</th></tr>
+    <tr><td>不提供法律建议</td><td><span class="fail">✗</span></td><td>无任何关于劳动法/仲裁/法律建议的禁止规则</td></tr>
+    <tr><td>不进行心理诊断</td><td><span class="fail">✗</span></td><td>无任何关于心理健康诊断的禁止规则</td></tr>
+    <tr><td>不替用户做职业决定</td><td><span class="warn">⚠</span></td><td>规则 15 禁止"你应该离职"，但未禁止"你应该转岗""你应该留下"等</td></tr>
+    <tr><td>不判断他人真实意图</td><td><span class="warn">⚠</span></td><td>仅在 INTERNAL_MARKERS 中有提及，系统提示词中无独立规则</td></tr>
+  </table>
+</div>
+
+<table>
+  <tr><th>检查项</th><th>状态</th><th>说明</th></tr>
+  <tr><td>首页免责声明</td><td><span class="warn">⚠</span></td><td>有不构成职业建议声明，但缺少隐私/匿名说明</td></tr>
+  <tr><td>分享页不暴露原始输入</td><td><span class="check">✓</span></td><td>不展示 initial/turns/answer</td></tr>
+  <tr><td>报告免责声明</td><td><span class="check">✓</span></td><td>"不代表事实结论，也无法判断他人的真实想法。建议结合后续实际行为持续验证"</td></tr>
+  <tr><td>技术实现匿名</td><td><span class="check">✓</span></td><td>HttpOnly Cookie <span class="code">xray_uid</span>，不收集个人信息</td></tr>
+</table>
+
+<hr>
+
+<!-- ============================== -->
+<h2>六、统一内部问题清单</h2>
+
+<table>
+  <tr><th style="width:40px">#</th><th style="width:56px">级别</th><th>区域</th><th>问题</th><th>文件:行号</th><th style="width:72px">状态</th></tr>
+
+  <tr>
+    <td>1</td><td><span class="tag tag-p0">P0</span></td>
+    <td>核心链路</td>
+    <td><strong>scanMode 未传入服务端</strong> — 快速模式（5轮）服务端按 10 轮策略出题，维度覆盖不全、时间趋势/反向验证可能来不及</td>
+    <td><span class="code">interview.functions.ts:135,246</span><br><span class="code">interview.ts:75</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>2</td><td><span class="tag tag-p0">P0</span></td>
+    <td>报告质量</td>
+    <td><strong>分类器兜底逻辑误判</strong> — 「觉得」「好像」「似乎」「听说」「看来」「应该是」「估计」等推测词不在任何模式数组中，≥6 字落入事实</td>
+    <td><span class="code">classifier.ts:130-136</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>3</td><td><span class="tag tag-p0">P0</span></td>
+    <td>隐私</td>
+    <td><strong>首页无隐私/匿名策略声明</strong> — 用户不知道数据匿名存储、不收集个人信息</td>
+    <td><span class="code">index.tsx:238-243</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>4</td><td><span class="tag tag-p1">P1</span></td>
+    <td>报告质量</td>
+    <td><strong>inferences + openAssumptions 合并展示</strong> — 用户无法区分 AI 推断和未验证假设</td>
+    <td><span class="code">index.tsx:922-925</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>5</td><td><span class="tag tag-p1">P1</span></td>
+    <td>报告质量</td>
+    <td><strong>misjudgment / secondaryIssues / potentialRisks 未渲染</strong> — 三个字段已生成但 UI 完全不展示</td>
+    <td><span class="code">index.tsx（ReportView）</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>6</td><td><span class="tag tag-p1">P1</span></td>
+    <td>隐私边界</td>
+    <td><strong>系统提示词缺四项边界规则</strong> — 无法律建议/心理诊断/职业决定/判断他人意图的明确禁止</td>
+    <td><span class="code">prompts.server.ts:147-199</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>7</td><td><span class="tag tag-p1">P1</span></td>
+    <td>移动端</td>
+    <td><strong>扫描模式按钮 390px 溢出</strong> — <span class="code">flex gap-2</span> 无 <span class="code">flex-wrap</span></td>
+    <td><span class="code">index.tsx:320</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>8</td><td><span class="tag tag-p1">P1</span></td>
+    <td>分享</td>
+    <td>分享 API 返回完整 report_data（含 knownFacts 等可能敏感信息），虽分享页面只展示部分</td>
+    <td><span class="code">tracking.server.ts:400-445</span></td>
+    <td>待评估</td>
+  </tr>
+
+  <tr>
+    <td>9</td><td><span class="tag tag-p2">P2</span></td>
+    <td>核心链路</td>
+    <td><span class="code">assessmentIdRef</span> 接收但未使用（无用参数）</td>
+    <td><span class="code">index.tsx:762</span></td>
+    <td>待清理</td>
+  </tr>
+
+  <tr>
+    <td>10</td><td><span class="tag tag-p2">P2</span></td>
+    <td>核心链路</td>
+    <td>useEffect 依赖数组不完整（<span class="code">[round]</span> 缺 initial/history/TARGET_ROUNDS）</td>
+    <td><span class="code">index.tsx:500</span></td>
+    <td>待修复</td>
+  </tr>
+
+  <tr>
+    <td>11</td><td><span class="tag tag-p2">P2</span></td>
+    <td>核心链路</td>
+    <td><span class="code">textRef</span> 创建但从未读取</td>
+    <td><span class="code">index.tsx:262</span></td>
+    <td>待清理</td>
+  </tr>
+
+  <tr>
+    <td>12</td><td><span class="tag tag-p2">P2</span></td>
+    <td>报告质量</td>
+    <td><span class="code">headlineFor</span> 使用 || 条件在边界情况下可能低估风险</td>
+    <td><span class="code">report-presenter.ts:115-136</span></td>
+    <td>待评估</td>
+  </tr>
+
+  <tr>
+    <td>13</td><td><span class="tag tag-p2">P2</span></td>
+    <td>核心链路</td>
+    <td>tracking 错误被静默吞掉，DB 写失败用户无感知</td>
+    <td><span class="code">index.tsx:170</span></td>
+    <td>待评估</td>
+  </tr>
+</table>
+
+<hr>
+
+<h3>状态汇总</h3>
+
+<table>
+  <tr><th>级别</th><th>总数</th><th>说明</th></tr>
+  <tr><td><span class="tag tag-p0">P0 阻断</span></td><td style="font-weight:700; font-size:18px;">3</td><td>必须修完才能进入用户测试</td></tr>
+  <tr><td><span class="tag tag-p1">P1 体验</span></td><td style="font-weight:700; font-size:18px;">5</td><td>建议修完再测试</td></tr>
+  <tr><td><span class="tag tag-p2">P2 优化</span></td><td style="font-weight:700; font-size:18px;">5</td><td>不影响核心流程，可后续迭代</td></tr>
+</table>
+
+<p style="margin-top:32px; font-size:13px; color:var(--muted);">
+  验证方法：代码级静态审计 + 系统提示词审查 + 响应式类名遍历 + CSS/PDF 注入逻辑验证<br>
+  真机浏览器验证（Playwright 截图 + 手动测试 6 场景）建议在 P0 修复后执行
+</p>
+
+</body>
+</html>

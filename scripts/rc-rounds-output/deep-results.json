@@ -1,0 +1,42 @@
+{
+  "ctaText": "深度 X 光扫描→",
+  "roundLabels": [
+    "第 1/10 轮资源",
+    "第 2/10 轮替代风险",
+    "第 3/10 轮关系",
+    "第 4/10 轮关系",
+    "第 5/10 轮替代风险",
+    "第 6/10 轮关系",
+    "第 7/10 轮关系",
+    "第 8/10 轮关系",
+    "第 9/10 轮关系",
+    "第 10/10 轮信息"
+  ],
+  "finalLabel": "第 10/10 轮",
+  "scanVisible": true,
+  "reportVisible": true,
+  "logs": [
+    "[Interview] effect fired: round=0 history.length=0 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=0 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=1 history.length=1 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=1 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=2 history.length=2 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=2 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=3 history.length=3 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=3 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=4 history.length=4 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=4 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=5 history.length=5 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=5 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=6 history.length=6 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=6 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=7 history.length=7 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=7 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=8 history.length=8 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=8 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=9 history.length=9 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=false forcedDone=false history.length=9 TARGET_ROUNDS=10",
+    "[Interview] effect fired: round=10 history.length=10 scanMode=deep TARGET_ROUNDS=10",
+    "[Interview] nextQuestion resolved: res.done=true forcedDone=true history.length=10 TARGET_ROUNDS=10"
+  ]
+}
