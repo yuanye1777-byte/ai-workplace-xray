@@ -33,3 +33,10 @@ dist-ssr
 test-ai*.js
 test-ai*.mjs
 test-screenshot*.png
+.env
+.env.*
+!.env.example
+serveo_key
+serveo_key.pub
+scripts.zip
+test-e2e.mjs
