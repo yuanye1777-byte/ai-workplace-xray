@@ -119,5 +119,5 @@ export type ScanMode = "quick" | "deep";
 export interface AIService {
   classify(text: string): Promise<Classified>;
   nextQuestion(initial: string, history: QAItem[], scanMode?: ScanMode): Promise<NextQuestion>;
-  generateReport(initial: string, history: QAItem[]): Promise<Report>;
+  generateReport(initial: string, history: QAItem[], scanMode?: ScanMode): Promise<Report>;
 }

@@ -113,6 +113,11 @@ function factCount(report: Report): number {
 
 // 一句话结论：由多维信号与证据量共同决定，避免单一事件式的确定性结论
 export function headlineFor(report: Report): string {
+  const normalizedHeadline = cleanCopy(report.headline);
+  if (normalizedHeadline.includes("30 天观察线")) {
+    return normalizedHeadline;
+  }
+
   const risky = dimsAtRisk(report).length;
   const facts = factCount(report);
   const score = report.totalScore;
