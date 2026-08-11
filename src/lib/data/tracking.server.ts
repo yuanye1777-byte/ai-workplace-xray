@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { CURRENT_MODEL_VERSION, CURRENT_PROMPT_VERSION } from "../ai/version";
 import type { Report } from "../ai/types";
+import { buildShareReportPayload } from "@/lib/report-quality";
 import type { Json, Database } from "@/integrations/supabase/types";
 
 const toJson = (v: unknown): Json => JSON.parse(JSON.stringify(v ?? null)) as Json;
@@ -445,25 +446,24 @@ export async function getSharedReport(
   const diag = Array.isArray(data.diagnoses) ? data.diagnoses[0] : data.diagnoses;
   if (!diag) return null;
 
-  // 只提取分享页展示所需的最小字段，不暴露完整 report_data
   const raw = diag.report_data as Record<string, unknown> | null;
-  const dims = Array.isArray(raw?.dimensions)
-    ? (raw!.dimensions as Array<{ key: string; score: number; level: string; explain: string }>)
-        .map((d) => ({ key: d.key, score: d.score, level: d.level ?? "", explain: d.explain ?? "" }))
-    : [];
-  const topSignals = Array.isArray(raw?.topSignals) ? (raw!.topSignals as string[]).slice(0, 3) : [];
-  const knownFacts = Array.isArray(raw?.knownFacts) ? (raw!.knownFacts as string[]).slice(0, 5) : [];
-  const misjudgment = typeof raw?.misjudgment === "string" ? raw!.misjudgment : "";
+  if (raw && Array.isArray(raw.dimensions)) {
+    return buildShareReportPayload(
+      raw as unknown as Report,
+      data.created_at,
+      diag.issue_type ?? "unclear",
+    );
+  }
 
   return {
     headline: diag.conclusion ?? "（无结论）",
     total_score: diag.risk_score ?? 0,
     total_level: diag.risk_level ?? "",
     main_issue_type: diag.issue_type ?? "unclear",
-    dimensions: dims,
-    top_signals: topSignals,
-    known_facts: knownFacts,
-    misjudgment,
+    dimensions: [],
+    top_signals: [],
+    known_facts: [],
+    misjudgment: "",
     created_at: data.created_at,
   };
 }

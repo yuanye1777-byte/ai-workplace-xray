@@ -27,6 +27,10 @@ import {
   reversalAssessment,
   toPossibilities,
 } from "@/lib/report-presenter";
+import {
+  buildReportShareText,
+  reportQualitySnapshot,
+} from "@/lib/report-quality";
 import RadarChartView from "@/components/report/RadarChart";
 import ScoreBar from "@/components/report/ScoreBar";
 import { exportReportAsPdf } from "@/lib/export-pdf";
@@ -760,29 +764,6 @@ function Scanning({ onDone, onRetry, reportError }: { onDone: () => void; onRetr
 
 /* -------------------- Report -------------------- */
 
-function buildShareSummary(report: Report): string {
-  const lines: string[] = [];
-  const headline = headlineFor(report);
-  const level = friendlyLevel(report.totalLevel);
-  const score = report.totalScore;
-  const top3 = cleanList(report.topSignals).slice(0, 3);
-  const observe = dynamicObserveSignals(report);
-
-  lines.push("📋 AI 职场 X 光报告");
-  lines.push("");
-  lines.push(`一句话结论：${headline}`);
-  lines.push(`风险等级：${level}`);
-  lines.push(`综合评分：${score}/100`);
-  lines.push("");
-  lines.push("🔍 前三个关键信号：");
-  top3.forEach((s, i) => lines.push(`  ${i + 1}. ${s}`));
-  lines.push("");
-  lines.push("👀 未来 30 天建议观察：");
-  observe.forEach((s, i) => lines.push(`  ${i + 1}. ${s}`));
-
-  return lines.join("\n");
-}
-
 function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: Report; scanMode: ScanMode; assessmentIdRef: React.MutableRefObject<string | null>; onRestart: () => void }) {
   const possibilities = toPossibilities(report.explanations);
   const knownFacts = cleanList(report.knownFacts);
@@ -791,9 +772,10 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
   const conclusion = conclusionBlocks(report);
   const observe = dynamicObserveSignals(report);
   const reversal = reversalAssessment(report);
+  const quality = reportQualitySnapshot(report);
   const [exporting, setExporting] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const shareText = buildShareSummary(report);
+  const shareText = buildReportShareText(report);
 
   const handleExport = async () => {
     const el = document.getElementById("report-content");
@@ -862,6 +844,39 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
       <h3 className="mb-4 text-sm font-medium tracking-wider text-muted-foreground">
         你的当前职场状态
       </h3>
+      <div className="mb-4 rounded-xl border border-border bg-card/40 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="text-xs font-medium tracking-wider text-muted-foreground">
+              V1 报告质量门禁
+            </div>
+            <p className="mt-1 text-xs leading-6 text-muted-foreground">
+              统一检查评分等级、证据分层、行动建议、边界文案和分享字段最小化。
+            </p>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={quality.status === "pass" ? "text-primary" : "text-yellow-300"}>
+              {quality.status === "pass" ? "通过" : "需复核"}
+            </span>
+            <span className="text-2xl font-semibold tabular-nums">{quality.score}</span>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {quality.gates.map((gate) => (
+            <span
+              key={gate.id}
+              title={gate.detail}
+              className={`rounded border px-2 py-1 text-[11px] ${
+                gate.passed
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-yellow-500/40 bg-yellow-500/10 text-yellow-200"
+              }`}
+            >
+              {gate.label}
+            </span>
+          ))}
+        </div>
+      </div>
       <div className="grid gap-4 lg:grid-cols-[1.4fr,1fr]">
         <div className="rounded-xl border border-border bg-card/60 p-6">
           <div className="text-xs text-muted-foreground">一句话结论</div>
