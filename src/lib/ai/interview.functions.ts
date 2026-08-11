@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { generateReport as localReport } from "./report";
 import { chooseNextQuestion as localNextQuestion, classifyAnswer as localClassify } from "./interview";
+import { normalizeReportForMode } from "@/lib/report-quality";
 import type { Classified, Dimension, QAItem, Report, ScanMode } from "./types";
 
 // NOTE: 系统提示词位于 ./prompts.server；在 handler 内动态 import，避免打进前端 bundle。
@@ -340,7 +341,7 @@ export const generateReportFn = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Report> => {
     try {
       if (!(await allowAiCall("generateReportFn"))) {
-        return localReport(data.initial, data.history as QAItem[]);
+        return localReport(data.initial, data.history as QAItem[], data.scanMode);
       }
       const { generateText } = await import("ai");
       const {
@@ -406,12 +407,12 @@ ${ISSUE_ENUM.join(", ")}。label 用简体中文写完整名称。
 
       const parsed = tryParseJson(text);
       if (parsed && looksLikeReport(parsed)) {
-        return sanitizeReport(parsed);
+        return sanitizeReport(parsed, data.scanMode, data.history as QAItem[]);
       }
       throw new Error("AI 报告 JSON 解析失败");
     } catch (error) {
       console.warn("generateReportFn fallback to local:", (error as Error).message);
-      return localReport(data.initial, data.history as QAItem[]);
+      return localReport(data.initial, data.history as QAItem[], data.scanMode);
     }
   });
 
@@ -494,7 +495,7 @@ function scoreMatchesLevel(score: number, level: string): boolean {
   return scoreToLevelStr(score) === level;
 }
 
-function sanitizeReport(raw: Record<string, unknown>): Report {
+function sanitizeReport(raw: Record<string, unknown>, scanMode: ScanMode, history: QAItem[]): Report {
   const r = raw as unknown as Report;
   // 确保维度按固定顺序，缺失补齐
   const byKey = new Map(r.dimensions?.map((d) => [d.key, d]) ?? []);
@@ -511,7 +512,7 @@ function sanitizeReport(raw: Record<string, unknown>): Report {
   );
   // P1-1: totalScore ↔ totalLevel 一致性
   const fixedLevel = scoreMatchesLevel(r.totalScore, r.totalLevel) ? r.totalLevel : scoreToLevelStr(r.totalScore);
-  return {
+  return normalizeReportForMode({
     ...r,
     totalScore: Math.max(0, Math.min(100, Math.round(r.totalScore))),
     totalLevel: fixedLevel,
@@ -539,5 +540,5 @@ function sanitizeReport(raw: Record<string, unknown>): Report {
           in3m: (r.futureTrend.in3m ?? []).slice(0, 3),
         }
       : undefined,
-  };
+  }, scanMode, history);
 }

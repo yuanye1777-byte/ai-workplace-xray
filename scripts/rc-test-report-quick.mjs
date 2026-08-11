@@ -21,7 +21,7 @@ const history = QUICK_ANSWERS.map((answer, i) => ({
   targetDimension: ["power", "resource", "reverse", "relation", "stability"][i],
 }));
 
-const report = generateReport(TEST_INPUT, history);
+const report = generateReport(TEST_INPUT, history, "quick");
 
 console.log("=== Quick Mode Report Check ===\n");
 console.log(`headline: ${report.headline}`);

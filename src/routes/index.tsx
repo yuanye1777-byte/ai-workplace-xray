@@ -153,7 +153,7 @@ function Index() {
           onDone={async () => {
             setReportError(null);
             try {
-              const r = await aiService.generateReport(initial, history);
+              const r = await aiService.generateReport(initial, history, scanMode);
               // P0-1: 防御性校验 — 确保报告包含必需字段后再渲染
               if (!r || !r.dimensions || r.dimensions.length === 0) {
                 throw new Error("报告生成不完整，缺少维度数据");
@@ -186,7 +186,7 @@ function Index() {
           onRetry={async () => {
             setReportError(null);
             try {
-              const r = await aiService.generateReport(initial, history);
+              const r = await aiService.generateReport(initial, history, scanMode);
               setReport(r);
               clearDraft();
               setStage("report");
@@ -844,6 +844,7 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
       <h3 className="mb-4 text-sm font-medium tracking-wider text-muted-foreground">
         你的当前职场状态
       </h3>
+      {import.meta.env.DEV && (
       <div className="mb-4 rounded-xl border border-border bg-card/40 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -877,6 +878,7 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
           ))}
         </div>
       </div>
+      )}
       <div className="grid gap-4 lg:grid-cols-[1.4fr,1fr]">
         <div className="rounded-xl border border-border bg-card/60 p-6">
           <div className="text-xs text-muted-foreground">一句话结论</div>

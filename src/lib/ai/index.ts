@@ -84,16 +84,16 @@ export const aiService: AIService = {
       };
     }
   },
-  async generateReport(initial: string, history: QAItem[]): Promise<Report> {
+  async generateReport(initial: string, history: QAItem[], scanMode: ScanMode = "deep"): Promise<Report> {
     try {
       return await withTimeout(
-        generateReportFn({ data: { initial, history } }),
+        generateReportFn({ data: { initial, history, scanMode } }),
         30_000,
         "generateReport",
       );
     } catch (e) {
       console.warn("[aiService.generateReport] fallback to local:", (e as Error).message);
-      return localReport(initial, history);
+      return localReport(initial, history, scanMode);
     }
   },
 };

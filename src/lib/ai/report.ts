@@ -1,7 +1,8 @@
 // 报告生成 - 从问诊记录和维度分数装配一份 X 光报告
 
 import { aggregateTotal, scoreDimensions } from "./analysis";
-import type { DimensionScore, QAItem, Report } from "./types";
+import { normalizeReportForMode } from "@/lib/report-quality";
+import type { DimensionScore, QAItem, Report, ScanMode } from "./types";
 
 function collectByKind(history: QAItem[]) {
   const facts: string[] = [];
@@ -70,7 +71,7 @@ function reversalOf(total: number, reverseCount: number): "高" | "中" | "低" 
   return "低";
 }
 
-export function generateReport(initial: string, history: QAItem[]): Report {
+export function generateReport(initial: string, history: QAItem[], scanMode: ScanMode = "deep"): Report {
   // P0-1: 防御性校验 — 输入为空时返回明确的「无效报告」而非让渲染层崩溃
   if (!history || history.length === 0) {
     return emptyReport();
@@ -156,7 +157,7 @@ export function generateReport(initial: string, history: QAItem[]): Report {
   // 避免 initial 未使用告警（未来接入 LLM 时会传递）
   void initial;
   // P0-2: 一致性校验 — headline / topSignals / scores 必须对齐
-  return validateConsistency(report, total);
+  return normalizeReportForMode(validateConsistency(report, total), scanMode, history);
 }
 
 /** P0-2 + P1-1: 校验 headline / topSignals / scores / level 的一致性 */
