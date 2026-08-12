@@ -55,8 +55,12 @@ const TEMPLATE_EXPLAIN =
 const QUICK_FORBIDDEN_ACTIONS = /了解外部机会|外部机会|内部转岗|调整团队|启动\s*Plan\s*B/i;
 const QUICK_OBSERVATION_HEADLINE =
   "建议先稳住现有职责，并围绕资源流向、会议角色、信息触达建立 30 天观察线。";
+const DEEP_OBSERVATION_HEADLINE =
+  "多个维度出现连续变化，但仍存在反向证据；建议先稳住关键职责，并用 30 天观察线判断变化是否继续扩大。";
 const QUICK_MITIGATION =
   /没有正式交接通知|没有.*正式.*交接|没有完全替代|没有.*完全.*接替|仍被单独交付任务|仍然.*单独.*任务|没有公开负面评价|没有.*公开.*负面|权限没有变化|仍然.*负责|依然.*正常|没有明确.*承接者.*完全|没有.*替代者.*全面/;
+const REVERSE_EVIDENCE_PATTERN =
+  /仍.*(?:交付|安排|负责|由我)|没有.*正式.*交接|没有.*完全.*替代|没有.*公开.*负面评价|没有.*公开.*负面|仍.*单独.*交付/;
 const STRONG_EVIDENCE =
   /已.*正式交接|收到.*正式交接|正式转交|权限.*(取消|收回|关闭|停用|无法访问)|明确替代者.*(全面|完全).*接手|明确.*全面接手|持续排除.*关键会议|(连续|持续|多次|最近几次).*(关键|重要).*(会议).*(未|没|不).*(邀请|通知|参加)/;
 const NEGATED_STRONG_EVIDENCE =
@@ -92,6 +96,24 @@ const QUICK_ACTIONS: Report["actions"] = {
     "每周复盘一次观察线：资源是否继续转移、关键会议是否恢复、任务交付是否仍由你负责。",
     "如果信号没有继续恶化，优先保持稳定交付和低冲突沟通。",
     "如果信号继续扩大，再基于新增事实重新做一次深度扫描。",
+  ],
+};
+
+const DEEP_ACTIONS_FALLBACK: Report["actions"] = {
+  in72h: [
+    "回顾当前职责边界，重点记录你当前掌握的核心资源和会议角色。",
+    "梳理过去 30 天的实际行为变化，不写情绪和假设。",
+    "明确你在当前项目中的关键贡献与责任范围。",
+  ],
+  in7d: [
+    "和直接上级做一次低冲突确认，围绕业务目标和职责边界沟通，不做职业选择判断。",
+    "在关键会议中争取明确的角色，保证你的参与和可见度。",
+    "继续观察资源流向和信息触达的变化，不轻易下结论。",
+  ],
+  in30d: [
+    "设定 30 天观察点，按维度跟踪资源、信息和关系是否继续变化。",
+    "如果信号持续恶化，再基于新增事实调整下一步行动。",
+    "保持现有职责的交付，同时准备好下一次复盘判断。",
   ],
 };
 
@@ -216,17 +238,25 @@ export function normalizeReportForMode(
 ): Report {
   const hasQuickMitigation = scanMode === "quick" && hasMitigatingEvidence(report, history);
   const strongEvidence = hasStrongEvidence(report, history);
+  const reverseEvidence = hasReverseEvidence(report, history);
   const dimensions = report.dimensions.map((dimension) =>
     normalizeDimension(dimension, {
       scanMode,
       hasQuickMitigation,
       strongEvidence,
+      hasReverseEvidence: reverseEvidence,
     }),
   );
-  const totalScore = clampTotalScore(weightedTotal(dimensions), hasQuickMitigation);
+  const totalScore = clampTotalScore(
+    weightedTotal(dimensions),
+    hasQuickMitigation,
+    scanMode,
+    strongEvidence,
+    reverseEvidence,
+  );
   const headline = hasQuickMitigation
     ? QUICK_OBSERVATION_HEADLINE
-    : sanitizeHeadline(report.headline, totalScore);
+    : sanitizeHeadline(report.headline, totalScore, scanMode);
   const trend = normalizeTrend(report.trend, history);
   const actions = normalizeActions(report.actions, scanMode, totalScore, strongEvidence, hasQuickMitigation);
 
@@ -253,13 +283,35 @@ function clampScore(value: number): number {
 
 function normalizeDimension(
   dimension: DimensionScore,
-  context: { scanMode: ScanMode; hasQuickMitigation: boolean; strongEvidence: boolean },
+  context: {
+    scanMode: ScanMode;
+    hasQuickMitigation: boolean;
+    strongEvidence: boolean;
+    hasReverseEvidence: boolean;
+  },
 ): DimensionScore {
   const baseScore = clampScore(dimension.score);
   const quickCap = context.hasQuickMitigation ? QUICK_CAPS_WITH_MITIGATION[dimension.key] : 100;
   const strongCap = context.strongEvidence ? 100 : 95;
   const quickFloor = context.scanMode === "quick" && dimension.key === "replace" && !context.strongEvidence ? 45 : 0;
-  const score = Math.max(quickFloor, Math.min(baseScore, quickCap, strongCap));
+  let score = Math.max(quickFloor, Math.min(baseScore, quickCap, strongCap));
+
+  if (context.scanMode === "deep" && !context.strongEvidence) {
+    if (dimension.key === "resource" && context.hasReverseEvidence) score = Math.min(score, 85);
+    if (dimension.key === "relation") score = Math.min(score, 70);
+    if (dimension.key === "power") score = Math.min(score, 70);
+    if (dimension.key === "replace") score = Math.min(score, 65);
+    if (dimension.key === "info") {
+      if (/信息不足|低权重处理/.test(cleanCopy(dimension.explain))) score = Math.min(score, 55);
+      score = Math.min(score, 80);
+    }
+  }
+  // Ensure deep-mode floors for specific dimensions when reverse evidence exists
+  if (context.scanMode === "deep" && !context.strongEvidence && context.hasReverseEvidence) {
+    if (dimension.key === "replace") score = Math.max(score, 45);
+    if (dimension.key === "power") score = Math.max(score, 55);
+    if (dimension.key === "relation") score = Math.max(score, 55);
+  }
 
   return {
     ...dimension,
@@ -297,7 +349,18 @@ function buildSpecificExplain(dimension: DimensionScore): string {
   return `${meta.label}维度目前该维度信息不足，因此只做低权重处理；后续请补充${meta.subject}的具体事件。`;
 }
 
-function clampTotalScore(score: number, hasQuickMitigation: boolean): number {
+function clampTotalScore(
+  score: number,
+  hasQuickMitigation: boolean,
+  scanMode: ScanMode,
+  strongEvidence: boolean,
+  hasReverseEvidence: boolean,
+): number {
+  if (scanMode === "deep" && !strongEvidence && hasReverseEvidence) {
+    // When deep scan has reverse evidence but lacks strong evidence,
+    // ensure total score stays within the RC2.2 target window 62-72.
+    return Math.min(72, Math.max(62, clampScore(score)));
+  }
   if (hasQuickMitigation) return Math.min(68, Math.max(55, score));
   return clampScore(score);
 }
@@ -319,9 +382,10 @@ function weightedTotal(dimensions: DimensionScore[]): number {
   return clampScore(numerator / denominator);
 }
 
-function sanitizeHeadline(headline: string, totalScore: number): string {
+function sanitizeHeadline(headline: string, totalScore: number, scanMode: ScanMode): string {
   const cleaned = cleanCopy(headline);
   if (QUICK_FORBIDDEN_HEADLINE.test(cleaned)) {
+    if (scanMode === "deep") return DEEP_OBSERVATION_HEADLINE;
     if (totalScore <= 68) return QUICK_OBSERVATION_HEADLINE;
     return "多个关键维度出现变化，建议先稳住现有职责，并通过 30 天观察线确认趋势。";
   }
@@ -349,7 +413,6 @@ function normalizeActions(
   hasQuickMitigation: boolean,
 ): Report["actions"] {
   if (scanMode === "quick") return QUICK_ACTIONS;
-  if (totalScore >= 80 && strongEvidence && !hasQuickMitigation) return actions;
   return {
     in72h: normalizeRecommendationList(actions.in72h, scanMode, "in72h"),
     in7d: normalizeRecommendationList(actions.in7d, scanMode, "in7d"),
@@ -358,12 +421,11 @@ function normalizeActions(
 }
 
 function normalizeRecommendationList(items: string[], scanMode: ScanMode, slot: string): string[] {
-  const cleaned = cleanList(items).map(rewriteTemplateCopy).filter((item) => {
-    if (scanMode === "quick") return !QUICK_FORBIDDEN_ACTIONS.test(item);
-    return true;
-  });
+  const cleaned = cleanList(items).map(rewriteTemplateCopy).filter((item) => !QUICK_FORBIDDEN_ACTIONS.test(item));
   if (cleaned.length >= 3) return cleaned.slice(0, 3);
-  const fallback = QUICK_ACTIONS[slot as keyof Report["actions"]] ?? QUICK_ACTIONS.in7d;
+  const fallback = scanMode === "deep"
+    ? DEEP_ACTIONS_FALLBACK[slot as keyof Report["actions"]] ?? DEEP_ACTIONS_FALLBACK.in7d
+    : QUICK_ACTIONS[slot as keyof Report["actions"]] ?? QUICK_ACTIONS.in7d;
   return [...cleaned, ...fallback].slice(0, 3);
 }
 
@@ -377,6 +439,10 @@ function rewriteTemplateCopy(text: string): string {
 
 function hasMitigatingEvidence(report: Report, history: QAItem[] = []): boolean {
   return QUICK_MITIGATION.test(evidenceCorpus(report, history));
+}
+
+function hasReverseEvidence(report: Report, history: QAItem[] = []): boolean {
+  return REVERSE_EVIDENCE_PATTERN.test(evidenceCorpus(report, history));
 }
 
 function hasStrongEvidence(report: Report, history: QAItem[] = []): boolean {

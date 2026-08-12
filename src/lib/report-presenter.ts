@@ -135,6 +135,10 @@ export function headlineFor(report: Report): string {
     return "多个关键维度出现持续变化，需要重点观察这些变化是否继续扩大。";
   }
   if (score <= 80) {
+    // 如果存在反向证据，应避免给出职业选择建议，使用更克制的 deep 文案
+    if (report.dimensions.some((d) => d.reverseFacts && d.reverseFacts.length > 0)) {
+      return "多个维度出现连续变化，但仍存在反向证据；建议先稳住关键职责，并用 30 天观察线判断变化是否继续扩大。";
+    }
     return "核心职责与资源出现持续转移，组织位置出现较明显变化，建议在稳住现有工作的同时，也开始了解其他选择。";
   }
   return "多个维度出现持续性变化，组织位置已有较为明显的改变。建议在稳住现有资源的同时，主动评估后续方向。";
@@ -216,6 +220,12 @@ export function reversalAssessment(report: Report): { label: string; hint: strin
     return {
       label: "中等",
       hint: `目前主要还剩下${intact[0]}这一条通道，需要尽快围绕它重新建立可见度，同时稳住手上剩余的资源。`,
+    };
+  }
+  if (report.dimensions.some((d) => d.reverseFacts.length > 0)) {
+    return {
+      label: "中等",
+      hint: "当前存在反向证据，说明仍有一定调整空间；建议稳住关键职责并继续观察是否继续恶化。",
     };
   }
   return {
