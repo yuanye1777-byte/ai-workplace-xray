@@ -776,6 +776,9 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
   const [exporting, setExporting] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const shareText = buildReportShareText(report);
+  const shareUrl = assessmentIdRef.current
+    ? `${window.location.origin}/share/${assessmentIdRef.current}`
+    : "";
 
   const handleExport = async () => {
     const el = document.getElementById("report-content");
@@ -797,6 +800,19 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
     try {
       await navigator.clipboard.writeText(shareText);
       toast.success("分享文案已复制到剪贴板");
+    } catch {
+      toast.error("复制失败，请手动复制");
+    }
+  };
+
+  const handleCopyShareLink = async () => {
+    if (!shareUrl) {
+      toast.error("分享链接不可用");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("分享链接已复制到剪贴板");
     } catch {
       toast.error("复制失败，请手动复制");
     }
@@ -1231,13 +1247,29 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
             <p className="mb-3 text-xs text-muted-foreground">
               以下摘要适合发送给朋友或发到社交媒体，不包含你的原始输入。
             </p>
+            <div className="mb-4 rounded-lg border border-border/60 bg-secondary/40 p-3">
+              <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                匿名分享链接
+              </div>
+              <div className="break-all text-sm leading-6 text-foreground/90">
+                {shareUrl || "链接生成中…"}
+              </div>
+            </div>
             <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-secondary/40 p-4 text-sm leading-6 text-foreground/90">
               {shareText}
             </pre>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <button
+                onClick={handleCopyShareLink}
+                disabled={!shareUrl}
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Copy className="h-4 w-4" />
+                复制链接
+              </button>
+              <button
                 onClick={handleCopyShare}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:brightness-110"
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-medium text-foreground/80 transition hover:bg-secondary"
               >
                 <Copy className="h-4 w-4" />
                 复制分享文案
