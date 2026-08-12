@@ -88,6 +88,7 @@ function Index() {
   const [history, setHistory] = useState<QAItem[]>([]);
   const [report, setReport] = useState<Report | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const assessmentIdRef = useRef<string | null>(null);
 
   // 草稿恢复
@@ -119,9 +120,11 @@ function Index() {
             setStage("interview");
             // 数据层：静默创建检测记录，失败不影响问诊
             assessmentIdRef.current = null;
+            setAssessmentId(null);
             startAssessmentFn({ data: { type: "INITIAL" } })
               .then((r) => {
                 assessmentIdRef.current = r.assessmentId;
+                setAssessmentId(r.assessmentId);
               })
               .catch(() => {});
           }}
@@ -140,6 +143,7 @@ function Index() {
             const id = assessmentIdRef.current;
             if (id) abandonAssessmentFn({ data: { assessmentId: id } }).catch(() => {});
             assessmentIdRef.current = null;
+            setAssessmentId(null);
             saveDraft(initial, history);
             setStage("home");
           }}
@@ -204,12 +208,14 @@ function Index() {
         <ReportView
           report={report}
           scanMode={scanMode}
-          assessmentIdRef={assessmentIdRef}
+          assessmentId={assessmentId}
           onRestart={() => {
             setInitial("");
             setHistory([]);
             setReport(null);
             setReportError(null);
+            assessmentIdRef.current = null;
+            setAssessmentId(null);
             clearDraft();
             setStage("home");
           }}
@@ -764,7 +770,7 @@ function Scanning({ onDone, onRetry, reportError }: { onDone: () => void; onRetr
 
 /* -------------------- Report -------------------- */
 
-function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: Report; scanMode: ScanMode; assessmentIdRef: React.MutableRefObject<string | null>; onRestart: () => void }) {
+function ReportView({ report, scanMode, assessmentId, onRestart }: { report: Report; scanMode: ScanMode; assessmentId: string | null; onRestart: () => void }) {
   const possibilities = toPossibilities(report.explanations);
   const knownFacts = cleanList(report.knownFacts);
   const judgements = cleanList(report.inferences);
@@ -776,9 +782,7 @@ function ReportView({ report, scanMode, assessmentIdRef, onRestart }: { report: 
   const [exporting, setExporting] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const shareText = buildReportShareText(report);
-  const shareUrl = assessmentIdRef.current
-    ? `${window.location.origin}/share/${assessmentIdRef.current}`
-    : "";
+  const shareUrl = assessmentId ? `${window.location.origin}/share/${assessmentId}` : "";
 
   const handleExport = async () => {
     const el = document.getElementById("report-content");
